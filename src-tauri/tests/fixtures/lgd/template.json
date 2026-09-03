@@ -1,0 +1,56 @@
+{
+  "id": null,
+  "name": "Summary to Chief Secretary (synthetic fixture)",
+  "instrumentType": "summary",
+  "sourceFormatRef": null,
+  "slots": [
+    {
+      "ordering": 0,
+      "kind": "boilerplate",
+      "label": "HEADER",
+      "boilerplateText": "SUMMARY FOR THE CHIEF SECRETARY, GOVERNMENT OF SINDH",
+      "requiredSourceCategory": null,
+      "proseGuidance": null
+    },
+    {
+      "ordering": 1,
+      "kind": "prose",
+      "label": "BACKGROUND",
+      "boilerplateText": null,
+      "requiredSourceCategory": null,
+      "proseGuidance": "Summarise the background of the proposal for the addressee."
+    },
+    {
+      "ordering": 2,
+      "kind": "cited",
+      "label": "SCHEME COST",
+      "boilerplateText": null,
+      "requiredSourceCategory": "fact: estimated cost scheme",
+      "proseGuidance": null
+    },
+    {
+      "ordering": 3,
+      "kind": "cited",
+      "label": "FINANCE CONCURRENCE",
+      "boilerplateText": null,
+      "requiredSourceCategory": "financial concurrence finance",
+      "proseGuidance": null
+    },
+    {
+      "ordering": 4,
+      "kind": "cited",
+      "label": "DELEGATED SANCTION",
+      "boilerplateText": null,
+      "requiredSourceCategory": "competent authority sanction development scheme",
+      "proseGuidance": null
+    },
+    {
+      "ordering": 5,
+      "kind": "cited",
+      "label": "ENVIRONMENTAL CLEARANCE",
+      "boilerplateText": null,
+      "requiredSourceCategory": "environmental clearance certificate nonexistent",
+      "proseGuidance": null
+    }
+  ]
+}

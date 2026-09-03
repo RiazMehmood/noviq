@@ -1,0 +1,273 @@
+{
+  "version": "2026-07-26",
+  "source": "docs/llm-provider-api-analysis-2026-07.pdf",
+  "note": "Rate limits and prices drift constantly (free tiers fastest). Model ids have roughly a 12-month half-life. This file is the BUNDLED DEFAULT; drop an updated copy at {NOVIQ_DATA_DIR}/provider_catalog.json to override without rebuilding the server. Always confirm a pick with the 'Test key' probe -- the probe, not this file, is the source of truth for whether a key/model pair works.",
+  "providers": [
+    {
+      "id": "groq",
+      "label": "Groq",
+      "base_url": "https://api.groq.com/openai",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "gsk_… (Groq API key)",
+      "console_url": "https://console.groq.com/keys",
+      "free_tier": "Permanent free tier, no credit card. Rate-limited per model.",
+      "notes": "Fastest free tier available (~320 tok/s) and the highest free request ceiling. TPM, not RPD, is the binding constraint for RAG prompts.",
+      "models": [
+        {
+          "id": "llama-3.3-70b-versatile",
+          "tier": "free",
+          "context": 128000,
+          "rpm": 30, "tpm": 6000, "rpd": 14400,
+          "input_price": 0.59, "output_price": 0.79,
+          "note": "Best free/quality balance for grounded answering."
+        },
+        {
+          "id": "llama-3.1-8b-instant",
+          "tier": "free",
+          "context": 128000,
+          "rpm": 30, "tpm": 6000, "rpd": 14400,
+          "input_price": 0.05, "output_price": 0.08,
+          "note": "Lowest latency; weaker at multi-document synthesis."
+        },
+        {
+          "id": "openai/gpt-oss-120b",
+          "tier": "paid",
+          "context": 128000,
+          "rpm": 30, "tpm": 6000, "rpd": 14400,
+          "input_price": 0.15, "output_price": 0.60
+        },
+        {
+          "id": "gemma2-9b-it",
+          "tier": "free",
+          "context": 8192,
+          "rpm": 30, "tpm": 15000, "rpd": 1000,
+          "note": "8K context sits below a typical Noviq RAG prompt — retrieved passages will be truncated."
+        }
+      ]
+    },
+    {
+      "id": "google",
+      "label": "Google AI Studio (Gemini / Gemma)",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "prefix": "",
+      "endpoint": "chat",
+      "key_placeholder": "AIza… (Google AI Studio API key)",
+      "console_url": "https://aistudio.google.com/apikey",
+      "free_tier": "Permanent free tier, no credit card. Free tier disappears the moment billing is enabled on the project.",
+      "trains_on_data": true,
+      "notes": "Largest free context window (up to 1M). Free-tier prompts are used to improve models outside the EU/UK/EEA. Gemini Pro was removed from the free tier in May 2026.",
+      "models": [
+        {
+          "id": "gemini-2.5-flash",
+          "tier": "free",
+          "context": 1000000,
+          "rpm": 10, "rpd": 250,
+          "input_price": 0.30, "output_price": 2.50,
+          "shutdown_date": "2026-10-16",
+          "note": "Scheduled for retirement — migrate to gemini-3-flash."
+        },
+        {
+          "id": "gemini-2.5-pro",
+          "tier": "paid",
+          "context": 1000000,
+          "input_price": 1.25, "output_price": 10.00,
+          "shutdown_date": "2026-10-16"
+        },
+        {
+          "id": "gemini-3-flash",
+          "tier": "paid",
+          "context": 1000000,
+          "input_price": 0.50, "output_price": 3.00
+        },
+        {
+          "id": "gemini-3.1-flash-lite",
+          "tier": "free",
+          "context": 1000000,
+          "rpm": 15, "rpd": 1000,
+          "input_price": 0.25, "output_price": 1.50,
+          "note": "1M context at budget pricing — the widest free context available."
+        },
+        {
+          "id": "gemini-3.1-pro",
+          "tier": "paid",
+          "context": 1000000,
+          "input_price": 2.00, "output_price": 12.00,
+          "note": "Rises to $4/$18 above 200K input tokens."
+        },
+        { "id": "gemma-4-12b-it", "tier": "free", "context": 128000, "rpm": 15, "rpd": 1000 },
+        { "id": "gemma-4-27b-it", "tier": "free", "context": 128000, "rpm": 15, "rpd": 1000 },
+        { "id": "gemma-4-4b-it", "tier": "free", "context": 128000, "rpm": 15, "rpd": 1000 }
+      ]
+    },
+    {
+      "id": "openrouter",
+      "label": "OpenRouter (multi-provider gateway)",
+      "base_url": "https://openrouter.ai/api",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "sk-or-… (OpenRouter API key)",
+      "console_url": "https://openrouter.ai/keys",
+      "free_tier": "50 requests/day under $10 lifetime credit; 1,000/day once $10 has been added (one-off, never expires).",
+      "notes": "One key reaches ~30 free models and most paid ones, and absorbs upstream model churn. No training-on-data clause. Recommended first integration.",
+      "models": [
+        { "id": "google/gemma-4-31b-it:free", "tier": "free", "context": 128000, "rpm": 20, "rpd": 50 },
+        { "id": "deepseek/deepseek-chat:free", "tier": "free", "context": 128000, "rpm": 20, "rpd": 50 },
+        { "id": "meta-llama/llama-3.3-70b-instruct:free", "tier": "free", "context": 128000, "rpm": 20, "rpd": 50 },
+        { "id": "qwen/qwen3-32b:free", "tier": "free", "context": 128000, "rpm": 20, "rpd": 50 },
+        { "id": "google/gemma-4-31b-it", "tier": "paid", "context": 128000 },
+        { "id": "meta-llama/llama-3.3-70b-instruct", "tier": "paid", "context": 128000, "input_price": 0.59, "output_price": 0.79 },
+        { "id": "deepseek/deepseek-chat", "tier": "paid", "context": 128000, "input_price": 0.27, "output_price": 1.10 },
+        { "id": "anthropic/claude-sonnet-4.6", "tier": "paid", "context": 200000, "input_price": 3.00, "output_price": 15.00 },
+        { "id": "openai/gpt-5.4", "tier": "paid", "context": 400000, "input_price": 2.50, "output_price": 15.00 }
+      ]
+    },
+    {
+      "id": "cerebras",
+      "label": "Cerebras",
+      "base_url": "https://api.cerebras.ai",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "csk-… (Cerebras API key)",
+      "console_url": "https://cloud.cerebras.ai",
+      "free_tier": "1,000,000 tokens/day, no credit card. Free context is capped at 8,192 tokens.",
+      "notes": "Highest free token volume and extreme throughput (~2,000 tok/s), but the 8K free context cap sits BELOW a typical Noviq RAG prompt and will truncate retrieved passages. Free catalogue was cut from ~12 models to 2 on 31 May 2026.",
+      "models": [
+        {
+          "id": "gpt-oss-120b",
+          "tier": "free",
+          "context": 8192,
+          "rpm": 5, "tpm": 30000,
+          "input_price": 0.35, "output_price": 0.75,
+          "note": "Free context capped at 8,192 tokens — paid tier lifts this."
+        },
+        {
+          "id": "glm-4.7",
+          "tier": "paid",
+          "context": 128000,
+          "input_price": 2.25, "output_price": 2.75
+        }
+      ]
+    },
+    {
+      "id": "mistral",
+      "label": "Mistral (La Plateforme)",
+      "base_url": "https://api.mistral.ai",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "Mistral API key",
+      "console_url": "https://console.mistral.ai/api-keys",
+      "free_tier": "\"Experiment\" tier, ~1B tokens/month, phone verification instead of a card.",
+      "trains_on_data": true,
+      "notes": "Very high free ceiling and EU data residency on paid plans — but the FREE tier requires opting in to training on submitted data. For a non-public legal corpus that is a policy decision, not an engineering one.",
+      "models": [
+        { "id": "mistral-large-latest", "tier": "paid", "context": 256000, "input_price": 0.50, "output_price": 1.50 },
+        { "id": "mistral-small-latest", "tier": "free", "context": 128000, "input_price": 0.10, "output_price": 0.30 },
+        { "id": "open-mistral-nemo", "tier": "free", "context": 128000 }
+      ]
+    },
+    {
+      "id": "deepseek",
+      "label": "DeepSeek",
+      "base_url": "https://api.deepseek.com",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "sk-… (DeepSeek API key)",
+      "console_url": "https://platform.deepseek.com/api_keys",
+      "free_tier": "5,000,000 tokens granted to new developer accounts (one-off, not a permanent tier).",
+      "notes": "Cheapest capable flagship on the market. Cache hits drop input to $0.07/M.",
+      "models": [
+        { "id": "deepseek-chat", "tier": "paid", "context": 128000, "input_price": 0.27, "output_price": 1.10, "note": "Cache hits billed at $0.07/M input." },
+        { "id": "deepseek-reasoner", "tier": "paid", "context": 128000, "input_price": 0.55, "output_price": 2.19 }
+      ]
+    },
+    {
+      "id": "openai",
+      "label": "OpenAI",
+      "base_url": "https://api.openai.com",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "sk-… (OpenAI API key)",
+      "console_url": "https://platform.openai.com/api-keys",
+      "free_tier": "None — metered from the first token.",
+      "notes": "Prompt caching gives up to 90% off repeated input; Noviq's system+grounding prefix is identical on every query, so this is the single biggest cost lever here.",
+      "models": [
+        { "id": "gpt-5.4", "tier": "paid", "context": 400000, "input_price": 2.50, "output_price": 15.00 },
+        { "id": "gpt-5.4-mini", "tier": "paid", "context": 400000, "input_price": 0.75, "output_price": 4.50 },
+        { "id": "gpt-4.1", "tier": "paid", "context": 1000000, "input_price": 2.00, "output_price": 8.00 },
+        { "id": "gpt-4.1-mini", "tier": "paid", "context": 1000000, "input_price": 0.40, "output_price": 1.60 },
+        { "id": "gpt-4o", "tier": "paid", "context": 128000, "input_price": 2.50, "output_price": 10.00, "shutdown_date": "2026-10-23", "note": "Scheduled for retirement — migrate to gpt-5.4 or gpt-5.5." },
+        { "id": "gpt-4.1-nano", "tier": "paid", "context": 1000000, "input_price": 0.10, "output_price": 0.40, "shutdown_date": "2026-10-23" }
+      ]
+    },
+    {
+      "id": "xai",
+      "label": "xAI (Grok)",
+      "base_url": "https://api.x.ai",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "xai-… (xAI API key)",
+      "console_url": "https://console.x.ai",
+      "free_tier": "Up to ~$150/month in credits via the data-sharing programme. Terms have changed repeatedly.",
+      "trains_on_data": true,
+      "notes": "Very large context windows and unusually cheap output. The free credits are explicitly an exchange for your data.",
+      "models": [
+        { "id": "grok-4.3", "tier": "paid", "context": 1000000, "input_price": 1.25, "output_price": 2.50 },
+        { "id": "grok-4.1-fast", "tier": "paid", "context": 2000000, "input_price": 0.20, "output_price": 0.50 }
+      ]
+    },
+    {
+      "id": "together",
+      "label": "Together AI",
+      "base_url": "https://api.together.xyz",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "Together API key",
+      "console_url": "https://api.together.ai/settings/api-keys",
+      "free_tier": "Trial credit only.",
+      "notes": "Broad open-weight catalogue.",
+      "models": [
+        { "id": "meta-llama/Llama-3.3-70B-Instruct-Turbo", "tier": "paid", "context": 128000, "input_price": 0.88, "output_price": 0.88 },
+        { "id": "Qwen/Qwen3-235B-A22B-Instruct", "tier": "paid", "context": 128000 }
+      ]
+    },
+    {
+      "id": "fireworks",
+      "label": "Fireworks AI",
+      "base_url": "https://api.fireworks.ai/inference",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "fw_… (Fireworks API key)",
+      "console_url": "https://fireworks.ai/account/api-keys",
+      "free_tier": "$1 trial credit — enough to evaluate, not to test.",
+      "models": [
+        { "id": "accounts/fireworks/models/llama-v3p3-70b-instruct", "tier": "paid", "context": 128000, "input_price": 0.90, "output_price": 0.90 }
+      ]
+    },
+    {
+      "id": "nvidia",
+      "label": "NVIDIA NIM",
+      "base_url": "https://integrate.api.nvidia.com",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "nvapi-… (NVIDIA API key)",
+      "console_url": "https://build.nvidia.com",
+      "free_tier": "1,000 credits at signup, +4,000 on request. Credit-metered rather than perpetual.",
+      "models": [
+        { "id": "meta/llama-3.3-70b-instruct", "tier": "free", "context": 128000, "rpd": 1000 },
+        { "id": "deepseek-ai/deepseek-r1", "tier": "free", "context": 128000, "rpd": 1000 }
+      ]
+    },
+    {
+      "id": "custom",
+      "label": "Custom (OpenAI-compatible)",
+      "base_url": "",
+      "prefix": "/v1",
+      "endpoint": "chat",
+      "key_placeholder": "API key (if the endpoint requires one)",
+      "free_tier": "",
+      "notes": "Any gateway that speaks /v1/chat/completions. Base URL, prefix and endpoint are editable here.",
+      "models": []
+    }
+  ]
+}

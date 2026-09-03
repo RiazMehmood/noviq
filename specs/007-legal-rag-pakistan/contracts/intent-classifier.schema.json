@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://echo-ai/specs/007/intent-classifier.schema.json",
+  "title": "IntentClassification",
+  "description": "Grammar-constrained output of the small-LLM intent classifier tiebreak pass. Rule-based classifier produces the same shape directly.",
+  "type": "object",
+  "required": ["intent", "confidence", "slots"],
+  "additionalProperties": false,
+  "properties": {
+    "intent": {
+      "type": "string",
+      "enum": [
+        "lookup",
+        "list_children",
+        "summarize",
+        "difference",
+        "cross_compare",
+        "action_items",
+        "timeline",
+        "procedure",
+        "fallback"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "slots": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "instrument": {
+          "type": ["string", "null"],
+          "description": "Instrument name or short form mentioned in the query, e.g. 'RTI Act 2017' or 'Sindh Local Government Act'."
+        },
+        "section_path": {
+          "type": ["string", "null"],
+          "description": "Hierarchical section reference, e.g. 'Section 6(2)(a)' or 'Article 25(1)'."
+        },
+        "topic": {
+          "type": ["string", "null"],
+          "description": "Subject mentioned in the query, e.g. 'penalties', 'arms license', 'building plan approval'."
+        },
+        "comparands": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "For Difference / CrossCompare — list of instrument names or section references to compare. Empty unless intent in {difference, cross_compare}.",
+          "maxItems": 8
+        },
+        "timeline_anchor": {
+          "type": ["string", "null"],
+          "description": "For Timeline — the section, instrument, or topic the timeline is anchored on."
+        }
+      }
+    }
+  }
+}

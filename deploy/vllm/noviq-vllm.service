@@ -1,0 +1,27 @@
+# F016 (T023) — vLLM continuous-batching inference sidecar (loopback OpenAI API).
+# Install: sudo cp deploy/vllm/noviq-vllm.service /etc/systemd/system/
+#          sudo systemctl daemon-reload && sudo systemctl enable --now noviq-vllm
+#
+# Provisioned out-of-tree by deploy/vllm/setup-vllm.sh (survives git reset). The
+# Rust noviq-server depends on this being up when NOVIQ_INFER_ENGINE=vllm (FR-012);
+# see the Wants=/After= line added to noviq-server.service (T024).
+[Unit]
+Description=Noviq vLLM inference sidecar (loopback OpenAI API)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=appadmin
+WorkingDirectory=/opt/noviq/vllm
+ExecStart=/opt/noviq/echoAI/deploy/vllm/run-vllm.sh
+# Operator tunables (NOVIQ_VLLM_*) live in the server .env, single source of truth.
+EnvironmentFile=/opt/noviq/echoAI/.env
+# Cold start loads + makes the model resident on the GPU; give it room before
+# systemd considers the start failed. Restart on crash so the Rust side can
+# recover from fallback back to vLLM automatically (FR-011).
+TimeoutStartSec=180
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

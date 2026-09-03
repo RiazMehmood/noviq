@@ -1,0 +1,17 @@
+=== latencies (http time_s) ===
+200 1.517139
+200 1.528401
+200 1.537086
+200 1.538247
+200 1.546346
+200 1.766194
+200 1.786760
+200 1.780936
+200 1.776816
+200 2.031796
+=== wall 2.051656764s ===
+served 10 fail 0  p50 1546  p95 2032  min 1517 max 2032
+=== vLLM running/waiting timeline (nonzero) ===
+=== peak running ===
+
+DIAG_DONE

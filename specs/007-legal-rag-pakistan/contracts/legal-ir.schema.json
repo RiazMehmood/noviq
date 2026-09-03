@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://echo-ai/specs/007/legal-ir.schema.json",
+  "title": "LegalIR",
+  "description": "Grammar-constrained Mistral output during Deep re-index. Also the file format of the on-disk JSON sidecar at {app_data_dir}/ir_cache/<sha256>.json.",
+  "type": "object",
+  "required": ["schema_version", "instrument_title", "nodes"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 16
+    },
+    "instrument_title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Full title, e.g. 'The Right of Access to Information Act, 2017'."
+    },
+    "instrument_id": {
+      "type": ["string", "null"],
+      "description": "Official short identifier, e.g. 'Act-XXXIV-of-2017'. Null for the Constitution."
+    },
+    "year": {
+      "type": ["integer", "null"],
+      "minimum": 1947,
+      "maximum": 2100
+    },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Node" },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "Node": {
+      "type": "object",
+      "required": ["id", "kind", "parent_id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^n[0-9]{4,6}$",
+          "description": "Stable per-document id, e.g. 'n0001'."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Instrument", "Preamble", "Chapter", "Part",
+            "Section", "Article", "SubSection", "Clause", "SubClause",
+            "Proviso", "Explanation", "Illustration",
+            "Schedule", "ScheduleItem", "Definition"
+          ]
+        },
+        "parent_id": {
+          "type": ["string", "null"],
+          "pattern": "^n[0-9]{4,6}$",
+          "description": "Null only on the Instrument root."
+        },
+        "number": {
+          "type": ["string", "null"],
+          "description": "e.g. '25', '(2)', '(a)', 'III'."
+        },
+        "title": {
+          "type": ["string", "null"]
+        },
+        "text": {
+          "type": "string"
+        },
+        "source_page": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "in_force": {
+          "type": "boolean",
+          "default": true
+        },
+        "amendments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AmendmentEvent" },
+          "default": []
+        }
+      }
+    },
+    "AmendmentEvent": {
+      "type": "object",
+      "required": ["kind", "by_instrument"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["inserted", "substituted", "repealed", "omitted"]
+        },
+        "by_instrument": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effective_date": {
+          "type": ["string", "null"],
+          "format": "date"
+        },
+        "source_page": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "raw_marker": {
+          "type": ["string", "null"]
+        }
+      }
+    }
+  }
+}

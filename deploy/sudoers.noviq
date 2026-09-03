@@ -1,0 +1,4 @@
+# F014 (T033) — install to /etc/sudoers.d/noviq (mode 0440, `visudo -c` to check).
+# The `noviq` service user may ONLY restart the server and trigger the decoupled
+# deploy unit — nothing else passwordless.
+noviq ALL=(root) NOPASSWD: /usr/bin/systemctl restart noviq-server, /usr/bin/systemctl start --no-block noviq-deploy.service

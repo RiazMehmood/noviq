@@ -1,0 +1,1 @@
+ALTER TABLE query_messages ADD COLUMN is_incomplete INTEGER NOT NULL DEFAULT 0;

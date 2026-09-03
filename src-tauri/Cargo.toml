@@ -1,0 +1,241 @@
+[package]
+name = "echo-ai"
+version = "0.1.0"
+description = "EchoAI — Fully-offline desktop AI assistant"
+authors = []
+edition = "2021"
+rust-version = "1.87"
+
+[lib]
+name = "echo_ai_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+# ─── features ────────────────────────────────────────────────────────────────
+[features]
+# Enable LLM inference (llama.cpp FFI — requires CMake + LLVM, slow first build).
+llm = ["llama-cpp-2", "llama-cpp-2/llguidance", "dep:encoding_rs"]
+# Enable audio transcription (whisper.cpp FFI — requires CMake, slow first build).
+stt = ["whisper-rs"]
+# GPU acceleration backends — opt-in; require GPU toolkit at build time.
+# NVIDIA: build with `--features cuda`  (needs CUDA Toolkit installed)
+# AMD:    build with `--features vulkan` (needs Vulkan SDK + glslc installed)
+cuda   = ["llama-cpp-2/cuda"]
+vulkan = ["llama-cpp-2/vulkan"]
+# F014 (ADR-0017): headless HTTP server + thin web client. Pulls in the axum
+# stack + argon2 (auth). Build the server binary with `--features server`
+# (and `--features cuda` on the GPU box). Keeps axum out of the desktop build.
+server = ["dep:axum", "dep:tower-http", "dep:argon2"]
+# F014: the Tauri desktop app. Tauri (and its GTK/WebKit Linux deps) is now
+# OPTIONAL so the headless `noviq-server` build links no GUI stack — required to
+# build on the Ubuntu-20.04 GPU VM, where webkit2gtk-4.1 is unavailable. The
+# shared service layer uses `crate::compat` (re-exports Tauri here, stubs it in
+# the server build).
+desktop = [
+    "dep:tauri",
+    "dep:tauri-plugin-dialog",
+    "dep:tauri-plugin-notification",
+    "dep:tauri-plugin-fs",
+    "dep:tauri-plugin-shell",
+    "dep:tauri-plugin-global-shortcut",
+    # Meeting Agent audio capture — desktop-only (cpal pulls alsa-sys, which the
+    # headless server VM has no need for). All consumers (meeting/*, stt_sidecar)
+    # are #[cfg(feature = "desktop")]-gated.
+    "dep:cpal",
+    "dep:webrtc-vad",
+    "dep:rubato",
+    "dep:hound",
+]
+# Default: desktop app with LLM enabled, GPU backends opt-in. STT excluded to
+# avoid ggml duplicate-symbol conflict (whisper-rs-sys and llama-cpp-sys-2 both
+# bundle ggml; link fails when both present). Re-enable stt once one of the
+# crates exposes a shared-ggml option.
+default = ["llm", "desktop"]
+
+# ─── binaries ──────────────────────────────────────────────────────────────
+# F014: the desktop binary now requires the `desktop` (Tauri) feature, so a
+# headless `--no-default-features --features server` build never tries to
+# compile the Tauri entrypoint (`run()` is gated behind `desktop`).
+[[bin]]
+name             = "echo-ai"
+path             = "src/main.rs"
+required-features = ["desktop"]
+
+# F014: headless server entrypoint. Only compiles with `--features server`
+# so the default desktop build is unaffected.
+[[bin]]
+name             = "noviq-server"
+path             = "src/bin/noviq-server.rs"
+required-features = ["server"]
+
+# ─── build deps ──────────────────────────────────────────────────────────────
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# ─── runtime deps ────────────────────────────────────────────────────────────
+[dependencies]
+# --- Tauri framework (optional: only the `desktop` feature; F014) ---
+tauri                        = { version = "2", features = ["tray-icon"], optional = true }
+tauri-plugin-dialog          = { version = "2", optional = true }
+tauri-plugin-notification    = { version = "2", optional = true }
+tauri-plugin-fs              = { version = "2", optional = true }
+tauri-plugin-shell           = { version = "2", optional = true }
+tauri-plugin-global-shortcut = { version = "2", optional = true }
+
+# --- Async runtime ---
+tokio      = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7", features = ["rt"] }
+
+# --- Serialisation ---
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# --- Database ---
+# F011 (ADR-0015): postgres-only — sqlite feature removed at the Phase-2 cutover.
+sqlx = { version = "0.8", features = [
+    "runtime-tokio",
+    "postgres",
+    "macros",
+    "uuid",
+    "chrono",
+] }
+# F011 (ADR-0015): bundled PostgreSQL engine — the PG 17.10 archive is embedded
+# into the binary at COMPILE time ("bundled"); pgvector is vendored under
+# resources/pgvector/ and installed by file copy at provisioning (offline).
+postgresql_embedded = { version = "0.20", features = ["bundled"] }
+
+# --- Identifiers & time ---
+uuid   = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+# --- Embeddings (fastembed-rs / ONNX, no Python, pure Rust) ---
+fastembed = "4"
+
+# --- LLM inference (llama.cpp Rust FFI) — optional, see feature "llm" ---
+llama-cpp-2 = { version = "0.1", optional = true }
+encoding_rs  = { version = "0.8", optional = true }
+
+# --- Audio transcription (whisper.cpp Rust FFI) — optional, see feature "stt" ---
+whisper-rs = { version = "0.13", optional = true }
+
+# --- File parsers ---
+lopdf    = "0.34"    # Pure-Rust PDF text extraction
+docx-rs  = "0.4"    # DOCX parsing
+calamine = "0.24"   # XLSX/XLSM spreadsheet reader
+zip      = "2"      # ZIP / Office Open XML container
+
+# --- File-system watcher ---
+notify = "6"
+
+# --- System information (CPU %, battery, RAM) ---
+sysinfo = "0.30"
+
+# --- PDF export (for analysis results) ---
+printpdf = "0.7"
+
+# --- Hashing (SHA-256 for file dedup) ---
+sha2 = "0.10"
+json5 = "0.4"          # lenient JSON parser (unquoted keys, trailing commas) — IR builder fallback
+
+# --- JSON schema validation (Feature 006 LLM IR validator) ---
+jsonschema = { version = "0.18", default-features = false, features = ["draft202012"] }
+async-trait = "0.1"
+
+# --- HTTP client (model download with progress streaming) ---
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+futures-util = "0.3"
+
+# --- HTTP server (F014 thin-client API + static frontend) — optional, feature "server" ---
+axum       = { version = "0.7", optional = true, features = ["multipart"] }
+tower-http = { version = "0.5", features = ["fs", "cors", "limit"], optional = true }
+argon2     = { version = "0.5", optional = true }
+
+# --- TOML config (persona loading) ---
+toml = "0.8"
+
+# --- Cross-encoder reranker (bge-reranker-base ONNX, lazy-loaded) ---
+# `cuda` enables the CUDA EP registration path (still load-dynamic — the actual
+# provider lib is dlopen'd at runtime via ORT_DYLIB_PATH; no static CUDA link).
+# Needed for ECHO_EMBED_GPU=1 GPU embeddings; without it ORT logs "CUDA execution
+# provider is not enabled in this build" and silently falls back to CPU.
+ort        = { version = "2.0.0-rc.9", default-features = false, features = ["load-dynamic", "ndarray", "cuda"] }
+ndarray    = "0.16"
+tokenizers = { version = "0.21", default-features = false, features = ["onig"] }
+
+# --- Regex (lightweight, no Unicode bloat) ---
+regex-lite = "0.1"
+
+# --- Concurrency utilities ---
+dashmap = "6"
+futures = "0.3"
+
+# --- Error handling ---
+anyhow    = "1"
+thiserror = "1"
+libc      = "0.2"   # F011: test-engine orphan reaping (kill stale postmasters)
+
+# --- Logging ---
+log        = "0.4"
+env_logger = "0.11"
+
+# --- Audio capture & processing (Meeting Agent Phase 2) — desktop-only.
+# Optional so the headless server build avoids cpal → alsa-sys (no ALSA on the VM).
+cpal       = { version = "0.15", optional = true }   # cross-platform audio capture
+webrtc-vad = { version = "0.4",  optional = true }   # voice-activity detection
+rubato     = { version = "0.15", optional = true }   # high-quality sample-rate conversion
+hound      = { version = "3.5",  optional = true }   # WAV encoding/decoding
+base64     = "0.22"  # base64 encode/decode (STT sidecar protocol)
+
+# ─── profile overrides ───────────────────────────────────────────────────────
+[profile.dev]
+opt-level = 0
+# Limit debug info — full DWARF on heavy deps (printpdf, llama-cpp-sys, etc.)
+# overflows lld's 32-bit relocations and breaks the link on Linux.
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+# Optimise heavy deps in dev so the app stays responsive.
+opt-level = 3
+debug = false
+
+[profile.release]
+opt-level     = 3
+lto           = true
+strip         = true
+codegen-units = 1
+
+# ─── dev-dependencies ────────────────────────────────────────────────────────
+[dev-dependencies]
+tempfile = "3"
+tokio    = { version = "1", features = ["rt-multi-thread", "macros"] }
+tower    = { version = "0.5", features = ["util"] }  # ServiceExt::oneshot for api_admin test
+
+# ─── integration tests ───────────────────────────────────────────────────────
+[[test]]
+name    = "test_indexing_pipeline"
+path    = "tests/integration/test_indexing_pipeline.rs"
+
+[[test]]
+name    = "test_query_router"
+path    = "tests/integration/test_query_router.rs"
+
+[[test]]
+name    = "reranker_test"
+path    = "tests/reranker_test.rs"
+
+[[test]]
+name    = "pg_spike"
+path    = "tests/pg_spike.rs"
+
+[[test]]
+name    = "lgd_drafting_acceptance"
+path    = "tests/lgd_drafting_acceptance.rs"
+
+[[test]]
+name              = "api_admin"
+path              = "tests/api_admin.rs"
+required-features = ["server"]
+
+[[test]]
+name              = "api_auth"
+path              = "tests/api_auth.rs"
+required-features = ["server"]

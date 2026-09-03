@@ -1,0 +1,39 @@
+
+=== A/B COMPARISON (verdict | latency_ms) ===
+ID    category        expect              llamacpp                   awq
+Q01   boundary       answer    TIMEOUT_ERR|200101    TIMEOUT_ERR|60060
+Q02   boundary       answer          CITED|126791          CITED| 5067
+Q03   multihop       answer          CITED| 5067          CITED| 7092
+Q04   definition     answer    TIMEOUT_ERR|200099    TIMEOUT_ERR|60060
+Q05   ambiguous_scope answer          CITED|22247        REFUSED| 6580
+Q06   refusal        refuse  FABRICATED_RISK| 3291  FABRICATED_RISK| 4807
+Q07   refusal        refuse     REFUSED_OK| 1517     REFUSED_OK| 1264
+Q08   conflict       answer          CITED| 4051          CITED| 5064
+Q09   multihop       answer          CITED| 4052          CITED| 5063
+Q10   boundary       answer          CITED| 4802          CITED| 8354
+Q11   multihop       answer          CITED| 7092          CITED| 9864
+Q12   ambiguous_scope answer          CITED| 8107          CITED| 4802
+Q13   definition     answer          CITED| 6328          CITED| 6825
+Q14   refusal        refuse     REFUSED_OK| 3539  FABRICATED_RISK| 3791
+Q15   conflict       answer          CITED| 3790          CITED| 6077
+Q16   boundary       answer    TIMEOUT_ERR|200101    TIMEOUT_ERR|60060
+Q17   multihop       answer          CITED|56751          CITED| 5571
+Q18   definition     answer          CITED| 4056          CITED| 5068
+Q19   refusal        refuse    TIMEOUT_ERR|200100    TIMEOUT_ERR|60060
+Q20   ambiguous_scope answer          CITED|12836          CITED|13668
+Q21   multihop       answer          CITED| 5066          CITED| 5316
+Q22   definition     answer          CITED| 2780          CITED| 2778
+Q23   conflict       answer          CITED| 4553          CITED| 5066
+Q24   refusal        refuse     REFUSED_OK| 2026     REFUSED_OK| 1765
+Q25   boundary       answer          CITED| 4305          CITED| 4553
+Q26   multihop       answer          CITED| 7596          CITED| 4800
+Q27   ambiguous_scope answer          CITED| 3792          CITED| 9376
+Q28   definition     answer          CITED| 3290          CITED| 2527
+Q29   refusal        refuse  FABRICATED_RISK| 3541  FABRICATED_RISK| 4553
+Q30   conflict       answer    TIMEOUT_ERR|200100    TIMEOUT_ERR|60032
+
+=== AGGREGATE (timeouts excluded from rates) ===
+            llamacpp: answer CITED 20/20  FALLBACK 0  | refuse REFUSED_OK 3/5  FABRICATED 2  | timeouts 5  | p50 4305ms p95 22247ms
+                 awq: answer CITED 19/20  FALLBACK 0  | refuse REFUSED_OK 2/5  FABRICATED 3  | timeouts 5  | p50 5066ms p95 9376ms
+
+GATE (FR-014): a vLLM arm passes if, vs llama.cpp, it does NOT lose citations on answer-arm Qs and does NOT increase FABRICATED on refuse-arm Qs. Hedged fabrications (e.g. 'not stated, but generally X [1]') need an eyeball — see per-question answers.

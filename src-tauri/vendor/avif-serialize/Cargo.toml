@@ -1,0 +1,12 @@
+[package]
+name = "avif-serialize"
+version = "0.8.8"
+authors = ["Kornel Lesiński <kornel@geekhood.net>"]
+edition = "2021"
+license = "BSD-3-Clause"
+description = "Minimal writer for AVIF header structure (MPEG/HEIF/MIAF/ISO-BMFF) — vendored for Rust 1.75 compat"
+repository = "https://github.com/kornelski/avif-serialize"
+include = ["src/*.rs", "Cargo.toml"]
+
+[dependencies]
+arrayvec = "0.7.6"

@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* EchoAI global styles */
+/* One canvas tone for the whole app. This used to paint the slate-dark theme
+   (#0f172a) that the Noviq paper palette replaced; every page sets its own light
+   background, so the dark value only ever showed at the edges — overscroll
+   gutters, the area behind a short page, the browser's own frame. */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #fbfdfb; /* noviq.paper */
+  color: #1b2a1b;            /* noviq.ink */
+}
+
+/* Prevent text selection on UI chrome */
+.no-select {
+  user-select: none;
+}
+
+/* Full viewport height that survives mobile browser chrome.
+   `100vh` on iOS/Android counts the space behind the collapsing URL bar, so a
+   bottom-anchored element (the chat composer) sits below the fold and cannot be
+   reached. `100dvh` tracks the *visible* viewport. The `100vh` line first is the
+   fallback for browsers without dvh — they keep the old behaviour. */
+.app-viewport {
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Touch targets: coarse pointers need ~44px of hit area (WCAG 2.5.5 / Apple HIG).
+   Applied to icon buttons that are visually smaller than that. */
+@media (pointer: coarse) {
+  .tap-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Custom scrollbar — wider for easier grabbing */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+/* Chat messages container — force scrollbar always visible even during streaming */
+.chat-scroll::-webkit-scrollbar {
+  display: block !important;
+  width: 8px !important;
+}
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: #c6dfbd !important; /* noviq.200 */
+  border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c6dfbd; /* noviq.200 */
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9cc78d; /* noviq.300 */
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #c6dfbd transparent;
+}
+
+/* Stacked tables for narrow screens.
+   The Admin user list carries 10 columns; at 390px neither squeezing nor
+   horizontal scrolling is usable (you would drag ~900px sideways to read one
+   row). Below `md` each row becomes a card and each cell a "Label: value" line,
+   with the header text supplied by `data-label` on the `<td>`.
+
+   Done in CSS rather than by rendering a second card-shaped JSX branch so the
+   row markup stays a single source of truth — a duplicated branch is how two
+   renderings of the same data drift apart.
+
+   Opt a full-width cell (e.g. a `colspan` detail panel) out with
+   `data-label=""` — it then renders plain, with no label and no card chrome. */
+@media (max-width: 767.98px) {
+  .stack-table,
+  .stack-table tbody,
+  .stack-table tr,
+  .stack-table td {
+    display: block;
+    width: 100%;
+  }
+  .stack-table thead {
+    display: none;
+  }
+  .stack-table tr {
+    border: 1px solid #e2e8df; /* noviq.line */
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #fff;
+  }
+  .stack-table td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    text-align: right;
+    border: 0;
+    padding: 0.25rem 0;
+  }
+  .stack-table td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #4d8c3a; /* noviq.500 */
+  }
+  /* Full-width cells: no label, no card padding, no split row. */
+  .stack-table td[data-label=""] {
+    display: block;
+    text-align: left;
+  }
+  .stack-table td[data-label=""]::before {
+    content: none;
+  }
+}
+
+/* Indeterminate progress bar — slides left-to-right infinitely */
+@keyframes indeterminate {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+.animate-indeterminate {
+  animation: indeterminate 1.4s ease-in-out infinite;
+}

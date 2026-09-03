@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Free GPU Cloud Credits — Programs, Sizing and Runway for a 100-User Department</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm 18mm 14mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Segoe UI","Helvetica Neue",Arial,sans-serif; font-size: 9.2pt; line-height: 1.45; color: #1a1d21; margin: 0; }
+  h1 { font-size: 20pt; margin: 0 0 4pt; letter-spacing: -0.4pt; }
+  h2 { font-size: 13pt; margin: 20pt 0 7pt; padding-bottom: 3pt; border-bottom: 1.6pt solid #1a1d21; letter-spacing: -0.2pt; }
+  h3 { font-size: 10.4pt; margin: 13pt 0 5pt; color: #0b3d5c; }
+  p { margin: 0 0 6pt; }
+  ul, ol { margin: 0 0 7pt; padding-left: 15pt; }
+  li { margin-bottom: 2.5pt; }
+  code { font-family: Consolas,"Courier New",monospace; font-size: 8.4pt; background: #eef1f4; padding: 0.5pt 2.5pt; border-radius: 2px; }
+  .subtitle { color: #55606b; font-size: 10pt; margin: 0 0 2pt; }
+  .meta { color: #77828d; font-size: 8pt; margin: 0 0 12pt; }
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0 10pt; font-size: 8.1pt; }
+  th, td { border: 0.6pt solid #ccd3da; padding: 3.4pt 4.5pt; text-align: left; vertical-align: top; }
+  th { background: #1a1d21; color: #fff; font-weight: 600; font-size: 7.8pt; letter-spacing: 0.2pt; }
+  tbody tr:nth-child(even) { background: #f5f7f9; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .grp td { background: #dde4ea !important; font-weight: 700; font-size: 8.2pt; }
+  .tag { display: inline-block; padding: 0.5pt 4pt; border-radius: 8px; font-size: 7.2pt; font-weight: 700; white-space: nowrap; }
+  .t-ok   { background: #d8f0dc; color: #14532d; border: 0.5pt solid #7cc48c; }
+  .t-mid  { background: #fdeccd; color: #6b4408; border: 0.5pt solid #dfab4e; }
+  .t-bad  { background: #fadadd; color: #6d1220; border: 0.5pt solid #d98b95; }
+  .callout { border-left: 3pt solid #b8860b; background: #fdf8ec; padding: 6pt 9pt; margin: 8pt 0 10pt; }
+  .callout.warn { border-left-color: #b03a48; background: #fdf1f2; }
+  .callout.ok { border-left-color: #2e7d4f; background: #f0f9f2; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .pagebreak { page-break-before: always; }
+  table, tr, .callout { page-break-inside: avoid; }
+  h2, h3 { page-break-after: avoid; }
+  .src { font-size: 7.6pt; word-break: break-all; }
+  .footnote { font-size: 7.6pt; color: #6b757e; }
+</style>
+</head>
+<body>
+
+<h1>Free GPU Cloud Credits</h1>
+<p class="subtitle">Programs, eligibility, and how long they actually last for one department of ~100 users</p>
+<p class="meta">Noviq internal · Data current July 2026 · Companion to <em>LLM Provider &amp; Model Analysis (July 2026)</em></p>
+
+<div class="callout warn">
+  <p><strong>The single most important finding, before any table.</strong></p>
+  <p>The question "how long will free credits last for 100 users?" contains a hidden assumption that does not hold: <strong>GPU credits are not consumed by users or by tokens — they are consumed by wall-clock time the instance exists.</strong> A rented GPU bills identically whether it serves 100 queries or zero.</p>
+  <p>Measured against Noviq's actual load (§3), 100 users keep a single mid-range GPU busy roughly <strong>5% of the day</strong>. If that instance runs 24/7 you are paying for about <strong>20 hours of idle for every hour of work</strong>. Consequently the operating pattern changes your runway by <strong>3–10×</strong> — far more than the choice of provider, GPU, or credit programme does. §5 quantifies this; §6 is the resulting recommendation.</p>
+</div>
+
+<h2>1. Credit programmes — what is actually obtainable</h2>
+
+<table>
+  <thead>
+    <tr><th style="width:19%">Programme</th><th style="width:14%">Amount</th><th style="width:11%">Expiry</th><th style="width:20%">Eligibility</th><th style="width:36%">Assessment for Noviq</th></tr>
+  </thead>
+  <tbody>
+    <tr class="grp"><td colspan="5">Self-serve — no application, available today</td></tr>
+    <tr><td><strong>Google Cloud</strong> free trial</td><td class="num">$300</td><td>90 days</td><td>New account, card required</td><td><span class="tag t-ok">TAKE NOW</span> Immediate, no gatekeeping. Enough for a full pilot (§5).</td></tr>
+    <tr><td><strong>Azure</strong> free account</td><td class="num">$200</td><td>30 days</td><td>New account</td><td><span class="tag t-mid">MARGINAL</span> Short window; GPU quota often needs a separate request that eats the month.</td></tr>
+    <tr><td><strong>Oracle Cloud</strong> free tier</td><td class="num">$300</td><td>30 days</td><td>New account</td><td><span class="tag t-mid">MARGINAL</span> 30-day expiry is the binding constraint, not the money.</td></tr>
+    <tr><td><strong>AWS</strong> free tier</td><td class="num">~$200</td><td>varies</td><td>New account</td><td><span class="tag t-mid">MARGINAL</span> GPU instances are largely outside the free tier.</td></tr>
+
+    <tr class="grp"><td colspan="5">Application-based — weeks of lead time, far larger amounts</td></tr>
+    <tr><td><strong>NVIDIA Inception</strong></td><td class="num">$10k–25k typical<br>up to $100k</td><td>1–2 yr</td><td><strong>No fee, no equity, no funding minimum, no cohort deadline</strong></td><td><span class="tag t-ok">HIGHEST PRIORITY</span> The only large programme with no funding or investor prerequisite. Bootstrapped teams typically land $10k–25k. Also unlocks AWS Activate and Nebius tiers below.</td></tr>
+    <tr><td>NVIDIA DGX Cloud (via Inception)</td><td class="num">up to $100k</td><td>1–2 yr</td><td>Inception member, by request</td><td><span class="tag t-mid">STRETCH</span> Dedicated H100 capacity — far more GPU than this workload needs.</td></tr>
+    <tr><td>Nebius AI Lift (via Inception)</td><td class="num">up to $150k<br>+ $10k inference</td><td>1–2 yr</td><td>Inception member</td><td><span class="tag t-mid">STRETCH</span> Largest single number found. Worth asking once Inception is in place.</td></tr>
+    <tr><td><strong>AWS Activate</strong></td><td class="num">$1k entry<br>up to $100k</td><td>1–2 yr</td><td>$1k tier open to any startup; higher tiers need an accelerator/VC referral</td><td><span class="tag t-ok">TAKE THE $1k</span> The entry tier needs no investor. Higher tiers realistically require the NIC/SEIC association.</td></tr>
+    <tr><td><strong>Microsoft Founders Hub</strong></td><td class="num">$1k entry<br>up to $150k</td><td>staged</td><td>Live product with verified traction — <em>not</em> institutional funding</td><td><span class="tag t-ok">GOOD FIT</span> Scales on demonstrated usage rather than investors. Noviq has a live deployment, which is the qualifying evidence.</td></tr>
+    <tr><td>Google for Startups</td><td class="num">up to $350k</td><td>1–2 yr</td><td>Accelerator or VC association</td><td><span class="tag t-bad">GATED</span> Largest headline, but needs the association Noviq does not yet have.</td></tr>
+    <tr><td>Oracle for Startups</td><td class="num">$500–100k</td><td>varies</td><td>Accelerator/VC association</td><td><span class="tag t-bad">GATED</span></td></tr>
+  </tbody>
+</table>
+
+<div class="callout ok">
+  <p><strong>Recommended sequence.</strong> (1) Apply to <strong>NVIDIA Inception</strong> today — no fee, no equity, no funding minimum, and it is the gateway to the AWS and Nebius tiers. (2) Take the <strong>$1k AWS Activate</strong> and <strong>Microsoft Founders Hub</strong> entry tiers, neither of which requires an investor. (3) Use the <strong>$300 Google Cloud</strong> trial immediately for the pilot, since it needs no application at all. (4) Revisit Google for Startups and Oracle for Startups <em>after</em> the NIC/SEIC association is formalised — that association is what unlocks the gated tiers.</p>
+</div>
+
+<h2>2. GPU rental rates — what the credits are spent against</h2>
+
+<p>Qwen3-8B at <code>max_model_len=8192</code> needs roughly 16 GB for weights in FP16 plus KV cache and overhead. It already runs in production on a 12 GB A40 slice, so any 24 GB card is comfortable and a 48 GB card is generous.</p>
+
+<table>
+  <thead>
+    <tr><th style="width:22%">Option</th><th style="width:13%">GPU</th><th style="width:11%">$/hour</th><th style="width:12%">$/month 24×7</th><th style="width:12%">$/month 10×22</th><th style="width:30%">Note</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Specialist clouds (RunPod / Lambda / Vast)</td><td>L40S 48 GB</td><td class="num">$0.39–1.00</td><td class="num">$285–730</td><td class="num">$86–220</td><td>40–85% cheaper than hyperscalers. No enterprise contract.</td></tr>
+    <tr><td><strong>GCP g2-standard-4</strong></td><td>L4 24 GB</td><td class="num">$0.70</td><td class="num">$511</td><td class="num">$154</td><td><strong>Best fit.</strong> Cheapest hyperscaler card that comfortably holds the model.</td></tr>
+    <tr><td><strong>AWS g5.xlarge</strong></td><td>A10G 24 GB</td><td class="num">$1.006</td><td class="num">$734</td><td class="num">$221</td><td>Closest match to the current A40 slice.</td></tr>
+    <tr><td>AWS g6e.xlarge</td><td>L40S 48 GB</td><td class="num">~$1.88</td><td class="num">$1,372</td><td class="num">$414</td><td>Headroom for a larger model later.</td></tr>
+    <tr><td>GCP A100 40 GB</td><td>A100</td><td class="num">$3.67</td><td class="num">$2,679</td><td class="num">$807</td><td><span class="tag t-bad">OVERKILL</span> ~5× the needed capacity at this load.</td></tr>
+    <tr><td>Spot / preemptible</td><td>any</td><td class="num">−50–70%</td><td class="num">—</td><td class="num">—</td><td>Interruptible. Viable for indexing, not for interactive chat.</td></tr>
+  </tbody>
+</table>
+
+<h2>3. Sizing the actual load — 1 department, ~100 users</h2>
+
+<p>Stated assumptions, so the arithmetic can be corrected if any is wrong:</p>
+
+<table>
+  <thead><tr><th style="width:42%">Assumption</th><th style="width:16%">Value</th><th style="width:42%">Basis</th></tr></thead>
+  <tbody>
+    <tr><td>Licensed users in the department</td><td class="num">100</td><td>Given.</td></tr>
+    <tr><td>Daily active share</td><td class="num">30%</td><td>Typical internal-tool engagement; 30 users/day.</td></tr>
+    <tr><td>Queries per active user per day</td><td class="num">10</td><td>Research-style usage.</td></tr>
+    <tr><td><strong>Queries per day</strong></td><td class="num"><strong>300</strong></td><td>Derived.</td></tr>
+    <tr><td>Prompt tokens per query</td><td class="num">~8,000</td><td>Measured Noviq RAG prompt (retrieved passages + grounding prefix).</td></tr>
+    <tr><td>Generated tokens per answer</td><td class="num">~500</td><td>Current answer lengths.</td></tr>
+    <tr><td>GPU seconds per query</td><td class="num">~15 s</td><td>~3 s prefill + ~12 s decode on a 24 GB card.</td></tr>
+    <tr><td><strong>GPU-hours of real compute per day</strong></td><td class="num"><strong>~1.25 h</strong></td><td>300 × 15 s.</td></tr>
+    <tr><td>Peak simultaneous requests</td><td class="num">3–5</td><td>300 queries clustered into office hours.</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <p><strong>What this means.</strong> One department of 100 users needs about <strong>1.25 GPU-hours of compute per day</strong> — roughly <strong>5% utilisation</strong> of a single 24 GB card running around the clock. A single L4 or A10G is not merely sufficient; it is already over-provisioned. The constraint is <em>peak concurrency</em> (3–5 simultaneous requests, which vLLM batches comfortably), never total throughput.</p>
+  <p>The practical implication: <strong>scaling from 100 to 300 users would not require a second GPU.</strong> The cost model is dominated by uptime, not headcount — so do not price additional departments as additional GPUs until concurrency, not volume, actually forces it.</p>
+</div>
+
+<div class="pagebreak"></div>
+<h2>4. Runway — how long each credit pot lasts</h2>
+
+<p>Runway on a <strong>GCP L4 at $0.70/hr</strong>, the recommended target. Three operating patterns:</p>
+<ul>
+  <li><strong>24/7</strong> — instance always up (730 h/month, $511/month).</li>
+  <li><strong>Business hours</strong> — up 10 h/day × 22 days (220 h/month, $154/month). Requires a start/stop schedule.</li>
+  <li><strong>Autoscale-to-zero</strong> — instance runs only when serving (~40 h/month, ~$28/month). Requires tolerating cold starts.</li>
+</ul>
+
+<table>
+  <thead>
+    <tr><th style="width:26%">Credit pot</th><th style="width:12%">GPU-hours</th><th style="width:16%">24/7</th><th style="width:16%">Business hours</th><th style="width:16%">Scale-to-zero</th><th style="width:14%">Capped by</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Azure $200</td><td class="num">286</td><td class="num">12 days</td><td class="num">1.3 months</td><td class="num">7 months</td><td>30-day expiry</td></tr>
+    <tr><td>Oracle $300</td><td class="num">428</td><td class="num">18 days</td><td class="num">1.9 months</td><td class="num">10 months</td><td>30-day expiry</td></tr>
+    <tr><td><strong>Google Cloud $300</strong></td><td class="num">428</td><td class="num">18 days</td><td class="num">1.9 months</td><td class="num">10 months</td><td>90-day expiry</td></tr>
+    <tr><td><strong>AWS Activate $1,000</strong></td><td class="num">1,428</td><td class="num">2.0 months</td><td class="num">6.5 months</td><td class="num">~3 years</td><td>credit</td></tr>
+    <tr><td>Founders Hub $1,000</td><td class="num">1,428</td><td class="num">2.0 months</td><td class="num">6.5 months</td><td class="num">~3 years</td><td>credit</td></tr>
+    <tr><td><strong>Inception $10,000</strong></td><td class="num">14,285</td><td class="num">1.6 years</td><td class="num">5.4 years</td><td class="num">credit expiry</td><td>1–2 yr expiry</td></tr>
+    <tr><td><strong>Inception $25,000</strong></td><td class="num">35,714</td><td class="num">4.1 years</td><td class="num">expiry</td><td class="num">expiry</td><td>1–2 yr expiry</td></tr>
+    <tr><td>AWS Activate $100,000</td><td class="num">142,857</td><td class="num">16 years</td><td class="num">expiry</td><td class="num">expiry</td><td>1–2 yr expiry</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <p><strong>Read the last column.</strong> From $10,000 upward the binding constraint stops being money and becomes the <strong>credit expiry date</strong>. At Inception scale you physically cannot spend the credits on one department's inference before they expire — which reframes the question from "can we afford it" to "what else should we run on them." Fine-tuning experiments, batch re-indexing and evaluation runs are the natural answer, and unlike inference they can use interruptible spot capacity.</p>
+</div>
+
+<h3>4.1 Direct answer to the question asked</h3>
+<table>
+  <thead><tr><th style="width:34%">Scenario</th><th style="width:22%">Runway, 1 dept / 100 users</th><th style="width:44%">Comment</th></tr></thead>
+  <tbody>
+    <tr><td>What you can start with <strong>today</strong>, no application ($300 GCP)</td><td><strong>~2 months</strong> business-hours<br>(18 days if left 24/7)</td><td>Enough to run a complete departmental pilot.</td></tr>
+    <tr><td>Realistic position in ~1 month (Inception $10–25k + AWS/Azure $1k each)</td><td><strong>1.5–4 years</strong> at 24/7<br>longer if scheduled</td><td>Comfortably covers the first paying deployment with room for training work.</td></tr>
+    <tr><td>Cost after credits run out</td><td><strong>$154–511/month</strong></td><td>Per department, one L4. Against a per-institution licence this is a small line item.</td></tr>
+  </tbody>
+</table>
+
+<h2>5. Why the operating pattern dominates</h2>
+<p>Same $300, same GPU, same 100 users — runway varies <strong>17×</strong> purely by uptime policy:</p>
+<table>
+  <thead><tr><th style="width:28%">Pattern</th><th style="width:14%">Hours/month</th><th style="width:14%">$/month</th><th style="width:14%">$300 lasts</th><th style="width:30%">Cost of the pattern</th></tr></thead>
+  <tbody>
+    <tr><td>Always on (default)</td><td class="num">730</td><td class="num">$511</td><td class="num">18 days</td><td>None — but ~95% is idle spend.</td></tr>
+    <tr><td>Scheduled start/stop</td><td class="num">220</td><td class="num">$154</td><td class="num">1.9 months</td><td>No service outside office hours. Usually acceptable for a government department.</td></tr>
+    <tr><td>Autoscale to zero</td><td class="num">~40</td><td class="num">~$28</td><td class="num">10 months</td><td>30–90 s cold start on the first query after idle. Needs a warm-up ping or a UI affordance.</td></tr>
+  </tbody>
+</table>
+<p class="footnote">A scheduled stop/start is a cron job and a systemd unit — a few hours of work that multiplies every credit pot in §4 by roughly 3.3×. It is the highest-return item in this document.</p>
+
+<h2>6. Recommendations</h2>
+<ol>
+  <li><strong>Apply to NVIDIA Inception this week.</strong> No fee, no equity, no funding minimum, no deadline — and it gates the AWS and Nebius tiers. It is the highest-value action available and costs nothing but the application.</li>
+  <li><strong>Take the $300 Google Cloud trial now</strong> for the pilot. It needs no application, and an L4 at $0.70/hr is the best price/fit match for Qwen3-8B.</li>
+  <li><strong>Implement scheduled start/stop before spending any credits.</strong> It multiplies every pot by ~3.3× and is a few hours of work. Do this first, not after the credits start draining.</li>
+  <li><strong>Do not provision an A100 or H100.</strong> At 5% utilisation of an L4, larger cards buy nothing but burn rate. Revisit only if the model grows beyond ~13B or concurrency exceeds ~20.</li>
+  <li><strong>Size the second department by concurrency, not headcount.</strong> One L4 should absorb several departments. Do not price additional GPUs into the commercial model until measured peak concurrency demands it.</li>
+  <li><strong>Confirm the data-boundary position before committing to a foreign hyperscaler.</strong> A government department's corpus moving to AWS/GCP is a policy question, not a cost question. The NTC ↔ Data Vault government GPUaaS arrangement already noted in our business planning would resolve both the boundary story and the GPU cost — get pricing from them before locking in a cloud, because that route may make this entire analysis moot.</li>
+</ol>
+
+<div class="callout warn">
+  <p><strong>Caveats.</strong> Credit amounts are what programmes advertise; actual awards vary with reviewer discretion and are frequently lower than the headline. Most credits exclude some services and carry 1–2 year expiries. GPU quota is a separate approval from credits on AWS, GCP and Azure, and often takes days — apply for quota early. All hourly rates are on-demand US-region list prices from July 2026 and vary by region.</p>
+</div>
+
+<h2>7. Sources</h2>
+<ol class="src">
+  <li>Thunder Compute — Free Cloud GPU Credits (15 programs) · https://www.thundercompute.com/blog/free-cloud-gpu-credits</li>
+  <li>Thunder Compute — NVIDIA Inception Program Guide 2026 · https://www.thundercompute.com/blog/nvidia-inception-program-guide</li>
+  <li>GMI Cloud — GPU Credit Programs for AI Startups 2026 · https://www.gmicloud.ai/en/blog/gpu-credit-programs-for-ai-startups-from-prototype-to-production-without-dilution</li>
+  <li>CloudKompas — Free Cloud Credits Compared: AWS, Azure, GCP, OCI · https://cloudkompas.com/blog/free-cloud-credits-for-startups-AWS-azure-google-cloud-oci</li>
+  <li>Spheron — Free GPU Cloud Credits 2026 · https://www.spheron.network/blog/free-gpu-cloud-credits-2026/</li>
+  <li>Oracle — Cloud Free Tier FAQ · https://www.oracle.com/cloud/free/faq/</li>
+  <li>Vantage — g5.xlarge pricing and specs · https://instances.vantage.sh/aws/ec2/g5.xlarge</li>
+  <li>CloudPrice — g6e.xlarge specs and pricing · https://cloudprice.net/aws/ec2/instances/g6e.xlarge</li>
+  <li>Thunder Compute — Google Cloud GPU Instances, specs and price · https://www.thundercompute.com/blog/google-cloud-gpu-instances</li>
+  <li>CloudZero — Cloud GPU Pricing: AWS vs Azure vs GCP · https://www.cloudzero.com/blog/cloud-gpu-pricing-comparison/</li>
+  <li>Spheron — GPU Cloud Pricing Comparison 2026 · https://www.spheron.network/blog/gpu-cloud-pricing-comparison-2026/</li>
+  <li>Spheron — Deploy Qwen 3 on GPU Cloud: hardware requirements · https://www.spheron.network/blog/deploy-qwen3-gpu-cloud/</li>
+</ol>
+
+</body>
+</html>

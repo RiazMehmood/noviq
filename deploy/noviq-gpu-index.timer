@@ -1,0 +1,14 @@
+[Unit]
+Description=Poll for indexing work and switch the GPU between chat and indexing
+
+[Timer]
+# One minute: fast enough that an upload waits at most ~60s for the GPU, slow
+# enough that the DB probe costs nothing. The decision itself is stateless, so a
+# missed tick simply resolves on the next one.
+OnBootSec=2min
+OnUnitActiveSec=1min
+AccuracySec=15s
+Unit=noviq-gpu-index.service
+
+[Install]
+WantedBy=timers.target

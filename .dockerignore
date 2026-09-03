@@ -1,0 +1,19 @@
+# Build context hygiene — without this the context is many GB and the build
+# uploads the embedding cache, the cargo target dir and the corpus.
+.git
+node_modules
+dist
+src-tauri/target
+.cargo
+.fastembed_cache
+.venv-reranker
+models
+logs
+data
+echo.db
+__pycache__
+*.log
+.noviq-data
+corpus-harvest
+research
+testing results

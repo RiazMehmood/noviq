@@ -1,0 +1,7 @@
+=== vLLM /v1/completions  N=20  2026-06-28T16:13:06+05:00 ===
+served : 20/20 (fail 0)
+p50    : 9426 ms
+p95    : 16410 ms
+min/max: 9415 / 16412 ms
+wall   : 16.4 s -> throughput 73.0 req/min
+ALL_DONE

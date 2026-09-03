@@ -1,0 +1,9 @@
+[Unit]
+Description=Noviq automatic GPU indexing mode (poll)
+# Serialise against the deploy poller: both restart noviq-server, and the two
+# doing it at once is how a restart lands mid-rebuild.
+After=noviq-deploy.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/noviq/gpu-index-auto.sh

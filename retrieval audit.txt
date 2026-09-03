@@ -1,0 +1,1548 @@
+# Mission: Complete Architectural Audit and Research-Driven Redesign of an Offline Legal RAG System
+
+You are acting as a team consisting of:
+
+* Principal Search Engineer
+* Information Retrieval Researcher
+* PostgreSQL/pgvector Expert
+* Knowledge Graph Researcher
+* GraphRAG Research Scientist
+* Legal AI Architect
+* Distributed Systems Engineer
+* Performance Engineer
+
+Your goal is NOT to simply fix bugs.
+
+Your goal is to perform a complete architectural audit of this Legal RAG system, determine its fundamental limitations, validate every finding using evidence from the codebase, runtime behaviour and database, research the current state-of-the-art, and propose a production-grade next-generation architecture.
+
+You are encouraged to think beyond the current implementation.
+
+Challenge assumptions.
+
+If the architecture itself is limiting performance, explain why and propose a superior alternative.
+
+Every conclusion must be supported by evidence.
+
+Never speculate without verification.
+
+===========================================================
+SYSTEM OVERVIEW
+===============
+
+Current system:
+
+* Offline Legal RAG
+* Rust desktop application
+* PostgreSQL
+* pgvector
+* PostgreSQL Full Text Search
+* Hybrid Retrieval
+* Local embedding model
+* Local LLM
+* Hierarchical chunking
+* Legal corpus (Acts, Rules, Manuals, Notifications etc.)
+
+Current retrieval flow:
+
+User Query
+
+↓
+
+Embedding
+
+↓
+
+Vector Search
+
+↓
+
+FTS
+
+↓
+
+Hybrid Merge
+
+↓
+
+Ranking
+
+↓
+
+Context Builder
+
+↓
+
+LLM
+
+We have already confirmed:
+
+• Chunking is generally good.
+
+• Embeddings retrieve the correct rule.
+
+• PostgreSQL is functioning correctly.
+
+However answer quality remains inconsistent.
+
+The goal is to determine the REAL architectural bottlenecks.
+
+===========================================================
+PART 1
+COMPLETE CODEBASE AUDIT
+=======================
+
+Read the ENTIRE codebase.
+
+Understand:
+
+* indexing
+* parsing
+* chunk creation
+* metadata generation
+* embeddings
+* pgvector
+* FTS
+* SQL
+* hybrid retrieval
+* ranking
+* context builder
+* prompt assembly
+* caching
+* evaluation
+* logging
+
+Produce a complete architecture diagram.
+
+Identify every important file.
+
+===========================================================
+PART 2
+VERIFY PREVIOUS FINDINGS
+========================
+
+Validate—not assume—the following observations.
+
+1.
+
+Rule 16 (Direct Contracting) is retrieved by vector search.
+
+Verify its exact rank.
+
+2.
+
+Rule 16 performs poorly in FTS.
+
+Explain precisely why.
+
+3.
+
+Hybrid retrieval changes ranking.
+
+Explain mathematically.
+
+4.
+
+Context Builder discards Rule 16.
+
+Verify exactly where and why.
+
+5.
+
+Large chunks consume most of the context budget.
+
+Measure this quantitatively.
+
+Support every finding using runtime traces.
+
+===========================================================
+PART 3
+LOOK FOR DEEPER PROBLEMS
+========================
+
+Assume the current architecture itself may be flawed.
+
+Search for issues such as:
+
+* Greedy context selection
+
+* Poor hybrid fusion
+
+* Large chunk dominance
+
+* Retrieval objective mismatch
+
+* Missing hierarchy awareness
+
+* Missing document routing
+
+* Missing legal ontology
+
+* Missing legal synonym expansion
+
+* Missing query rewriting
+
+* Missing adaptive retrieval depth
+
+* Missing parent-child reasoning
+
+* Missing neighbor expansion
+
+* Missing citation dependency tracking
+
+* Missing authority weighting
+
+* Missing evidence completeness scoring
+
+Find any additional issues not listed above.
+
+===========================================================
+PART 4
+QUESTION EVERY ASSUMPTION
+=========================
+
+Do NOT assume that Top-K retrieval is correct.
+
+Question:
+
+Should retrieval even be Top-K?
+
+Should chunks compete independently?
+
+Should legal rules be treated as isolated chunks?
+
+Should hybrid retrieval happen before document routing?
+
+Should context builder simply take ranked chunks?
+
+Would a lawyer solve this problem differently?
+
+Think like an architect, not an implementer.
+
+===========================================================
+PART 5
+OUTSIDE-THE-BOX ARCHITECTURE REVIEW
+===================================
+
+Research modern retrieval architectures.
+
+Do NOT limit yourself to current implementation.
+
+Study approaches including:
+
+* GraphRAG
+
+* LightRAG
+
+* Microsoft GraphRAG
+
+* GraphPack
+
+* Query-aware Graph Retrieval
+
+* Agentic RAG
+
+* Adaptive RAG
+
+* Multi-stage Retrieval
+
+* Multi-vector Retrieval
+
+* Parent-Child Retrieval
+
+* Recursive Retrieval
+
+* Recursive Abstractive Retrieval
+
+* ColBERT
+
+* Late Interaction Retrieval
+
+* SPLADE
+
+* HyDE
+
+* RAPTOR
+
+* Contextual Retrieval
+
+* Knowledge Graph Retrieval
+
+* Legal RAG
+
+* Citation-aware Retrieval
+
+* Hierarchical Retrieval
+
+Determine whether any of these ideas should replace or augment parts of the existing system.
+
+===========================================================
+PART 6
+RESEARCH SURVEY
+===============
+
+Search recent papers from:
+
+ACL
+
+EMNLP
+
+NeurIPS
+
+ICLR
+
+ICML
+
+AAAI
+
+SIGIR
+
+arXiv
+
+OpenReview
+
+Focus on:
+
+GraphRAG
+
+Context Optimization
+
+Query Planning
+
+Legal Retrieval
+
+Knowledge Graphs
+
+Hierarchical Retrieval
+
+Context Packing
+
+Budgeted Retrieval
+
+0/1 Knapsack Retrieval
+
+Adaptive Context Selection
+
+Parent Child Retrieval
+
+Summarize:
+
+* paper
+
+* contribution
+
+* strengths
+
+* weaknesses
+
+* applicability
+
+* implementation complexity
+
+Do not merely list papers.
+
+Explain how each idea maps to THIS codebase.
+
+One particularly relevant work is GraphPack, which formulates GraphRAG subgraph selection as a 0/1 knapsack optimization to maximize semantic relevance while minimizing structural redundancy under a fixed context budget. Analyze whether its ideas are applicable here, but also critically assess its limitations, including its dependence on high-quality anchor retrieval and budget sensitivity.
+
+===========================================================
+PART 7
+GRAPH-BASED REDESIGN
+====================
+
+Investigate whether this Legal RAG should evolve into a graph-based architecture.
+
+Possible graph nodes:
+
+Document
+
+Chapter
+
+Section
+
+Rule
+
+Clause
+
+Definition
+
+Exception
+
+Illustration
+
+Notification
+
+Government Department
+
+Entity
+
+Concept
+
+Possible edges:
+
+contains
+
+references
+
+defines
+
+overrides
+
+requires
+
+related_to
+
+exception_of
+
+same_subject
+
+amends
+
+implements
+
+Evaluate:
+
+Would graph retrieval outperform chunk retrieval?
+
+Would hybrid graph + vector retrieval be superior?
+
+Would graph traversal improve legal reasoning?
+
+===========================================================
+PART 8
+KNAPSACK OPTIMIZATION
+=====================
+
+Investigate replacing greedy context selection.
+
+Current system appears to use:
+
+Sort
+
+↓
+
+Take until budget exhausted
+
+Critically evaluate replacing this with:
+
+0/1 Knapsack
+
+Maximum Utility Packing
+
+Budget-aware Retrieval
+
+GraphPack
+
+However do NOT stop there.
+
+Research better alternatives.
+
+Possible objectives:
+
+maximize relevance
+
+maximize authority
+
+maximize evidence completeness
+
+maximize citation completeness
+
+minimize redundancy
+
+minimize token cost
+
+Design the mathematically best optimization objective.
+
+===========================================================
+PART 9
+LEGAL-SPECIFIC IMPROVEMENTS
+===========================
+
+Think specifically about legal retrieval.
+
+Investigate:
+
+Legal ontology
+
+Legal synonym expansion
+
+Citation graph
+
+Rule dependency graph
+
+Definition propagation
+
+Exception propagation
+
+Authority scoring
+
+Mandatory citation inclusion
+
+Legal reasoning chains
+
+Cross-document references
+
+Determine what should be implemented.
+
+===========================================================
+PART 10
+AGENTIC RETRIEVAL
+=================
+
+Investigate whether retrieval itself should become agentic.
+
+Examples:
+
+Planner
+
+↓
+
+Retriever
+
+↓
+
+Verifier
+
+↓
+
+Gap Detection
+
+↓
+
+Additional Retrieval
+
+↓
+
+Evidence Validator
+
+↓
+
+LLM
+
+Would iterative retrieval outperform one-shot retrieval?
+
+Would retrieval planning improve legal questions?
+
+===========================================================
+PART 11
+PERFORMANCE
+===========
+
+Evaluate:
+
+Latency
+
+Memory
+
+Embedding generation
+
+SQL
+
+Indexes
+
+Caching
+
+Parallel retrieval
+
+Streaming retrieval
+
+Incremental indexing
+
+Graph construction cost
+
+Offline execution
+
+GPU utilization
+
+===========================================================
+PART 12
+BENCHMARKING
+============
+
+Design an evaluation framework.
+
+Metrics should include:
+
+Recall@K
+
+MRR
+
+nDCG
+
+Context Precision
+
+Context Recall
+
+Grounding Score
+
+Citation Accuracy
+
+Answer Faithfulness
+
+Evidence Completeness
+
+Legal Citation Coverage
+
+Latency
+
+Memory
+
+Context Utilization
+
+Token Efficiency
+
+Redundancy Ratio
+
+Context Packing Efficiency
+
+Graph Coverage
+
+===========================================================
+PART 13
+IMPLEMENTATION ROADMAP
+======================
+
+Produce an implementation roadmap.
+
+Organize into:
+
+Immediate Wins
+
+Medium-term Improvements
+
+Major Architectural Changes
+
+Research Opportunities
+
+For each:
+
+Expected impact
+
+Engineering complexity
+
+Risk
+
+Files to modify
+
+Dependencies
+
+===========================================================
+PART 14
+RESEARCH OPPORTUNITIES
+======================
+
+Think like a PhD researcher.
+
+Identify novel research contributions that extend beyond existing literature.
+
+Avoid incremental ideas.
+
+Possible directions include:
+
+Legal GraphPack
+
+Authority-aware GraphRAG
+
+Utility-based Context Packing
+
+Hierarchical Legal Retrieval
+
+Citation-aware Retrieval
+
+Adaptive Legal Context Optimization
+
+Offline GraphRAG
+
+Agentic Legal Retrieval
+
+If similar work already exists, explain how to differentiate.
+
+===========================================================
+PART 15
+FINAL DELIVERABLE
+=================
+
+Produce a comprehensive engineering report.
+
+The report should contain:
+
+1.
+
+Current Architecture
+
+2.
+
+Evidence-based Findings
+
+3.
+
+Root Cause Analysis
+
+4.
+
+Verified Bottlenecks
+
+5.
+
+Research Survey
+
+6.
+
+Comparison with State-of-the-Art
+
+7.
+
+Architectural Redesign
+
+8.
+
+Implementation Plan
+
+9.
+
+Research Opportunities
+
+10.
+
+Prioritized Recommendations
+
+===========================================================
+IMPORTANT RULES
+===============
+
+Never guess.
+
+Never speculate.
+
+Every technical conclusion must be backed by:
+
+* source code
+
+* SQL
+
+* runtime traces
+
+* execution plans
+
+* benchmark results
+
+* published research
+
+Whenever proposing a redesign:
+
+Explain WHY it is superior.
+
+Explain WHY existing approaches fail.
+
+Estimate expected improvement.
+
+Estimate implementation complexity.
+
+If evidence is insufficient, identify exactly what instrumentation or experiments should be added to obtain it before making a recommendation.
+
+
+
+===========================================================
+PART 16
+CONVERSATIONAL RAG / SESSION-AWARE RETRIEVAL
+===========================================================
+
+The system currently answers each query independently.
+
+Investigate how to support long-running legal conversations while operating under strict context limits.
+
+The objective is to allow users to iteratively refine legal questions without resending the entire conversation.
+
+Examples:
+
+User:
+Show Rule 16.
+
+↓
+
+Explain Direct Contracting.
+
+↓
+
+Can Canon scanners qualify?
+
+↓
+
+What approvals are required?
+
+↓
+
+Draft a note.
+
+↓
+
+Now make it suitable for Finance Department.
+
+The system should understand that every follow-up refers to the same legal discussion.
+
+--------------------------------------------------------
+
+Research current state-of-the-art approaches for:
+
+• Conversational RAG
+
+• Session-aware Retrieval
+
+• Memory-Augmented RAG
+
+• Long-context Retrieval
+
+• Query Rewriting
+
+• Context Compression
+
+• Recursive Summarization
+
+• Memory Graphs
+
+• Episodic Memory
+
+• Semantic Memory
+
+• Agent Memory
+
+• Long-term Memory for LLMs
+
+• Reflection Memory
+
+• Retrieval over Conversation History
+
+• Graph Memory
+
+• Hierarchical Conversation Memory
+
+• Hybrid Memory Systems
+
+Research papers from:
+
+ACL
+
+EMNLP
+
+NeurIPS
+
+ICLR
+
+ICML
+
+SIGIR
+
+AAAI
+
+arXiv
+
+OpenReview
+
+--------------------------------------------------------
+
+Investigate multiple possible architectures.
+
+Examples:
+
+1.
+
+Conversation Summary Memory
+
+↓
+
+Retriever
+
+↓
+
+LLM
+
+--------------------------------------------------------
+
+2.
+
+Conversation Embeddings
+
+↓
+
+Vector Search
+
+↓
+
+Retrieve Relevant History
+
+↓
+
+LLM
+
+--------------------------------------------------------
+
+3.
+
+Conversation Knowledge Graph
+
+↓
+
+Graph Traversal
+
+↓
+
+Relevant History
+
+↓
+
+LLM
+
+--------------------------------------------------------
+
+4.
+
+Session Memory
+
++
+
+Document Retrieval
+
+↓
+
+Context Optimizer
+
+↓
+
+LLM
+
+--------------------------------------------------------
+
+5.
+
+Hierarchical Memory
+
+Recent Messages
+
++
+
+Conversation Summary
+
++
+
+Semantic Memory
+
++
+
+Document Retrieval
+
+↓
+
+LLM
+
+--------------------------------------------------------
+
+Evaluate the advantages and disadvantages of each approach.
+
+===========================================================
+MEMORY OPTIMIZATION
+===========================================================
+
+Investigate techniques including:
+
+• Rolling Summaries
+
+• Recursive Summaries
+
+• Memory Compression
+
+• Semantic Compression
+
+• Selective Memory
+
+• Retrieval-Based Memory
+
+• Sliding Window
+
+• Hierarchical Memory
+
+• Landmark Memory
+
+• Memory Graphs
+
+• Query-aware Memory Retrieval
+
+• Context Distillation
+
+• Conversation Chunking
+
+Determine which techniques are most suitable for an offline Legal RAG system.
+
+===========================================================
+QUERY REWRITING
+===========================================================
+
+Determine whether follow-up questions should first be rewritten into standalone questions.
+
+Example:
+
+User:
+Can it be used for Canon scanners?
+
+Rewrite internally as:
+
+Can Direct Contracting under SPPRA Rule 16 be used for procurement of Canon scanners from the sole distributor?
+
+Evaluate whether this improves retrieval.
+
+===========================================================
+MEMORY RETRIEVAL
+===========================================================
+
+Investigate whether previous conversations should themselves become searchable.
+
+Treat previous messages as another retrieval corpus.
+
+For every new query determine:
+
+• Which previous messages are relevant?
+
+• Which previous summaries are relevant?
+
+• Which retrieved legal documents are still relevant?
+
+Retrieve only the necessary history rather than replaying the entire chat.
+
+===========================================================
+CONTEXT OPTIMIZATION
+===========================================================
+
+Investigate combining:
+
+Conversation Memory
+
++
+
+Retrieved Legal Documents
+
++
+
+Graph Retrieval
+
++
+
+Knapsack Optimization
+
+into a single unified Context Optimizer.
+
+Determine the optimal allocation of the context window.
+
+Example:
+
+20% Recent Conversation
+
+20% Conversation Summary
+
+50% Legal Evidence
+
+10% Instructions
+
+Do NOT assume these percentages are optimal.
+
+Determine the best allocation through research and evidence.
+
+===========================================================
+PROPOSE A NEXT-GENERATION ARCHITECTURE
+===========================================================
+
+Design a production-ready architecture supporting:
+
+• Unlimited conversation length
+
+• Limited context windows
+
+• Offline execution
+
+• Fast retrieval
+
+• Low memory usage
+
+• Legal reasoning
+
+• Follow-up questions
+
+• Draft refinement
+
+• Multi-turn legal analysis
+
+The architecture should outperform simply appending previous chat history.
+
+Support every recommendation with published research and explain why it is superior.
+
+Query
+   │
+   ▼
+Hybrid Retriever
+   │
+   ├── Legal Documents
+   ├── Previous Conversation Memory
+   └── User Session Knowledge Graph
+   │
+   ▼
+Unified Context Optimizer (Graph + Knapsack)
+   │
+   ▼
+LLM
+
+
+===========================================================
+PART 17
+LEGAL QUERY UNDERSTANDING & SEMANTIC EXPANSION ENGINE
+===========================================================
+
+We are currently researching and developing a Legal Query Understanding module written entirely in Rust.
+
+This module executes immediately after the user submits a query and BEFORE any retrieval begins.
+
+Current conceptual pipeline:
+
+User Query
+
+↓
+
+Query Understanding Engine
+
+↓
+
+Keyword Extraction
+
+↓
+
+Legal Entity Extraction
+
+↓
+
+Concept Extraction
+
+↓
+
+Synonym Expansion
+
+↓
+
+Domain-specific Word Search
+
+↓
+
+Hybrid Retrieval
+
+↓
+
+Context Optimizer
+
+↓
+
+LLM
+
+The goal of this module is NOT simple synonym replacement.
+
+Its objective is to improve legal retrieval by understanding legal terminology, domain concepts, equivalent phrases and government-specific language before retrieval begins.
+
+===========================================================
+CURRENT DESIGN
+===========================================================
+
+Current proposed workflow:
+
+1.
+
+Receive raw user query.
+
+↓
+
+2.
+
+Extract:
+
+• legal entities
+
+• organizations
+
+• departments
+
+• rule numbers
+
+• section numbers
+
+• concepts
+
+• noun phrases
+
+• legal actions
+
+↓
+
+3.
+
+Generate normalized legal concepts.
+
+Example:
+
+"sole distributor"
+
+↓
+
+Concept
+
+"exclusive supplier"
+
+↓
+
+Concept
+
+"single source"
+
+↓
+
+Concept
+
+"direct contracting"
+
+↓
+
+Concept
+
+"proprietary procurement"
+
+↓
+
+4.
+
+Run synonym lookup.
+
+The synonym corpus itself is embedded using the same Rust module.
+
+Investigate whether embeddings are appropriate for synonym discovery or whether lexical indexes, finite-state dictionaries, ontologies, knowledge graphs or hybrid approaches are superior.
+
+↓
+
+5.
+
+Run exact word search.
+
+↓
+
+6.
+
+Generate expanded query.
+
+↓
+
+7.
+
+Send expanded query into retrieval.
+
+===========================================================
+AUDIT THIS DESIGN
+===========================================================
+
+Determine whether this architecture is optimal.
+
+Question every stage.
+
+Investigate whether:
+
+• synonym expansion should occur before embeddings
+
+• after embeddings
+
+• before FTS
+
+• after FTS
+
+• during hybrid retrieval
+
+or dynamically during retrieval.
+
+Do NOT assume the current design is correct.
+
+===========================================================
+RESEARCH CURRENT METHODS
+===========================================================
+
+Research state-of-the-art work on:
+
+Legal Query Understanding
+
+Semantic Query Expansion
+
+Legal Synonym Expansion
+
+Domain Ontologies
+
+Lexical Expansion
+
+Knowledge Graph Query Expansion
+
+Entity Linking
+
+Concept Expansion
+
+Pseudo Relevance Feedback
+
+Dense Query Expansion
+
+Sparse Query Expansion
+
+Hybrid Query Expansion
+
+LLM-assisted Query Rewriting
+
+Query Planning
+
+Adaptive Query Expansion
+
+Compare approaches used in:
+
+Legal Search
+
+Enterprise Search
+
+Government Search
+
+Medical Search
+
+Patent Retrieval
+
+Academic Retrieval
+
+===========================================================
+EVALUATE DIFFERENT SYNONYM SOURCES
+===========================================================
+
+Compare the advantages and disadvantages of:
+
+1.
+
+Static synonym dictionary
+
+2.
+
+Domain ontology
+
+3.
+
+Embedding similarity
+
+4.
+
+Knowledge graph traversal
+
+5.
+
+LLM-generated synonyms
+
+6.
+
+WordNet
+
+7.
+
+Custom legal thesaurus
+
+8.
+
+Government terminology dictionary
+
+9.
+
+Hybrid approach
+
+Determine which combination is best for an offline Legal RAG.
+
+===========================================================
+LEGAL-SPECIFIC REQUIREMENTS
+===========================================================
+
+Investigate whether synonyms should be classified into categories.
+
+Examples:
+
+Equivalent Terms
+
+sole distributor
+
+exclusive distributor
+
+single source
+
+direct contracting
+
+------------------------------------------------
+
+Government Terminology
+
+Chief Secretary
+
+Administrative Secretary
+
+Competent Authority
+
+------------------------------------------------
+
+Legal Concepts
+
+procurement
+
+purchase
+
+acquisition
+
+------------------------------------------------
+
+Actions
+
+approve
+
+sanction
+
+authorize
+
+permit
+
+------------------------------------------------
+
+References
+
+Rule
+
+Section
+
+Clause
+
+Schedule
+
+Determine whether different synonym classes should receive different retrieval weights.
+
+===========================================================
+QUERY REWRITING
+===========================================================
+
+Investigate whether synonym expansion should be replaced by intelligent query rewriting.
+
+Example:
+
+Original:
+
+Can Canon scanners be purchased from the sole distributor?
+
+↓
+
+Rewritten:
+
+Can procurement of Canon scanners through Direct Contracting under SPPRA Rule 16 be legally justified where only one authorized distributor exists?
+
+Determine whether this improves retrieval accuracy.
+
+===========================================================
+POSTGRES INTEGRATION
+===========================================================
+
+Investigate how the synonym engine should integrate with:
+
+pgvector
+
+PostgreSQL FTS
+
+Hybrid Retrieval
+
+Determine:
+
+Should synonym terms participate in vector search?
+
+Should they participate in FTS?
+
+Should original query terms receive higher weight?
+
+Should expanded terms receive lower weight?
+
+Determine optimal weighting mathematically.
+
+===========================================================
+GRAPH INTEGRATION
+===========================================================
+
+If the system evolves into GraphRAG,
+
+investigate whether synonym expansion should instead become graph traversal.
+
+Example:
+
+sole distributor
+
+↓
+
+exclusive supplier
+
+↓
+
+single source
+
+↓
+
+direct contracting
+
+↓
+
+Rule 16
+
+Determine whether graph traversal is superior to traditional synonym expansion.
+
+===========================================================
+RUST IMPLEMENTATION REVIEW
+===========================================================
+
+Audit the Rust implementation.
+
+Review:
+
+performance
+
+memory
+
+parallelism
+
+data structures
+
+indexing
+
+embedding generation
+
+search algorithm
+
+thread safety
+
+SIMD optimization
+
+caching
+
+Suggest improvements.
+
+===========================================================
+FINAL OBJECTIVE
+===========================================================
+
+Determine whether this module should evolve from a simple synonym engine into a complete Legal Query Understanding Engine capable of:
+
+• keyword extraction
+
+• entity extraction
+
+• legal concept extraction
+
+• ontology lookup
+
+• synonym expansion
+
+• graph traversal
+
+• query rewriting
+
+• query planning
+
+• retrieval routing
+
+Support every recommendation with evidence from code, experiments and published research.

@@ -1,0 +1,20 @@
+[package]
+name = "constitution_import"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Dev-only S1 importer: pakistani.org constitution HTML → ConstitutionIR JSON (feature 003)"
+
+# Standalone crate — deliberately NOT a Cargo workspace member. The Tauri app
+# (`src-tauri/`) has no workspace root; wrapping it in one risks its NTFS build
+# (target-dir / config.toml / run-dev.sh overrides). This tool never ships and
+# never compiles into the app bundle (Constitution Principle I), so full
+# decoupling is the smallest, safest diff. Build with:
+#   cargo run --manifest-path tools/constitution_import/Cargo.toml -- --out <path>
+
+[dependencies]
+anyhow = "1"
+scraper = "0.27"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = "3"

@@ -1,0 +1,12 @@
+# F014 (T032) — PRIMARY deploy trigger: poll origin/release every ~2 min.
+# Install: `systemctl enable --now noviq-deploy.timer`.
+[Unit]
+Description=Poll origin/release and redeploy on change
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+Unit=noviq-deploy-check.service
+
+[Install]
+WantedBy=timers.target

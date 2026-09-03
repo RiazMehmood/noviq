@@ -1,0 +1,10 @@
+# F014 (T032) — oneshot poll of origin/release, activated by noviq-deploy.timer.
+[Unit]
+Description=Noviq poll origin/release for new deploys
+
+[Service]
+Type=oneshot
+User=appadmin
+WorkingDirectory=/opt/noviq/echoAI
+# Login shell so git resolves from ~/.profile.
+ExecStart=/bin/bash -lc /opt/noviq/echoAI/deploy/check-release.sh

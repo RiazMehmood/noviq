@@ -1,0 +1,12 @@
+# F014 (T020) — TLS termination + reverse proxy in front of noviq-server.
+# Clients reach Caddy over HTTPS; only the loopback API is exposed (FR-005/FR-006,
+# SC-004 — PostgreSQL is never proxied). noviq-server binds NOVIQ_BIND=127.0.0.1:8080.
+#
+# If a public hostname exists, replace `:443` with it for automatic Let's Encrypt
+# certs. On the VPN-only VM, use the internal name + `tls internal` (self-signed).
+
+noviq.example.edu {
+	encode gzip
+	reverse_proxy 127.0.0.1:8080
+	# tls internal      # uncomment for VPN-only / no public DNS
+}

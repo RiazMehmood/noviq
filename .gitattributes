@@ -1,0 +1,6 @@
+# Shell scripts must stay LF: a CRLF shebang makes a container ENTRYPOINT fail
+# with the famously unhelpful "no such file or directory". This repo is edited on
+# Windows with core.autocrlf=true, so pin it here.
+*.sh text eol=lf
+deploy/docker/entrypoint.sh text eol=lf
+Dockerfile text eol=lf

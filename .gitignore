@@ -1,0 +1,86 @@
+# ─── Rust / Cargo ─────────────────────────────────────────────────────────────
+/target/
+src-tauri/target/
+**/*.rs.bk
+*.rlib
+*.prof*
+
+# ─── Node / npm ───────────────────────────────────────────────────────────────
+node_modules/
+dist/
+.cache/
+*.log
+
+# ─── Tauri ────────────────────────────────────────────────────────────────────
+src-tauri/gen/
+src-tauri/WixTools/
+
+# ─── Application data (never commit) ─────────────────────────────────────────
+# SQLite database files
+data/
+# GGUF model binaries
+models/
+# exported notebook archives
+*.echoai
+# fastembed ONNX model cache
+.fastembed_cache/
+src-tauri/.fastembed_cache/
+
+# ─── Tooling / agent caches ──────────────────────────────────────────────────
+.cargo/
+.superpowers/
+.claudeignore
+
+# ─── Benchmark / research outputs (regenerable) ──────────────────────────────
+testing results/
+
+# ─── Environment ──────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Editor artefacts ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/settings.json
+
+# ─── Build outputs ────────────────────────────────────────────────────────────
+*.tmp
+.worktrees/
+
+# ─── Python virtualenvs ───────────────────────────────────────────────────────
+.venv*/
+__pycache__/
+*.pyc
+
+# ─── Build / runtime caches kept beside the repo on NTFS ─────────────────────
+.cargo-ntfs/
+.hf-cache/
+.ort-runtime/
+
+# ─── Database backups created by aside-then-rebuild flow ─────────────────────
+echo.db
+echo.db-*
+echo.db.bak-*
+
+# ─── Eval run outputs (regenerable) ──────────────────────────────────────────
+logs/
+!logs/eval/COMPARISON.md
+
+# ─── Manual file backups ─────────────────────────────────────────────────────
+*.bak-*
+
+# ─── Phase 9a ingestion sidecar (PyInstaller frozen binary) ──────────────────
+# 29 MB rebuildable artifact — keep source + build.sh tracked, not the binary.
+# Produce locally / in CI: cd src-tauri/sidecars/ingestion-sidecar && ./build.sh
+src-tauri/binaries/ingestion-sidecar-*
+src-tauri/sidecars/ingestion-sidecar/.build-venv/
+src-tauri/sidecars/ingestion-sidecar/dist/
+src-tauri/sidecars/ingestion-sidecar/build/
+src-tauri/sidecars/ingestion-sidecar/*.spec
+
+# Harvested corpus — bulk PDFs, never committed
+corpus-harvest/

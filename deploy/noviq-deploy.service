@@ -1,0 +1,13 @@
+# F014 (T031) — build & redeploy, oneshot, DECOUPLED.
+# Triggered (never run inline) by check-release.sh / the webhook, so the
+# `systemctl restart noviq-server` inside deploy.sh can't kill this build.
+[Unit]
+Description=Noviq build & redeploy
+
+[Service]
+Type=oneshot
+User=appadmin
+WorkingDirectory=/opt/noviq/echoAI
+# Login shell so cargo/cmake(3.30)/node/npm/git resolve from ~/.profile — the
+# CUDA build needs them and a bare systemd exec has none of them on PATH.
+ExecStart=/bin/bash -lc /opt/noviq/echoAI/deploy/deploy.sh

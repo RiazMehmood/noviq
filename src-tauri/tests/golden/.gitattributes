@@ -1,0 +1,8 @@
+# Golden extraction fixtures must be BYTE-STABLE.
+#
+# These are verbatim `pdftotext -layout` output. Git's autocrlf would rewrite the
+# line endings on checkout, which silently changes the exact text the heading
+# scan is asserted against — and column/whitespace layout is precisely what
+# several of these cases exist to pin down. A fixture that differs between two
+# machines is not a fixture.
+*.txt -text

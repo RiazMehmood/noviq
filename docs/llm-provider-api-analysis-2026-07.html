@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>LLM Provider &amp; Model Analysis — Free and Paid API Tiers (July 2026)</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm 18mm 14mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 9.2pt; line-height: 1.45; color: #1a1d21; margin: 0;
+  }
+  h1 { font-size: 20pt; margin: 0 0 4pt; letter-spacing: -0.4pt; }
+  h2 {
+    font-size: 13pt; margin: 20pt 0 7pt; padding-bottom: 3pt;
+    border-bottom: 1.6pt solid #1a1d21; letter-spacing: -0.2pt;
+  }
+  h3 { font-size: 10.4pt; margin: 13pt 0 5pt; color: #0b3d5c; }
+  h4 { font-size: 9.4pt; margin: 9pt 0 3pt; }
+  p { margin: 0 0 6pt; }
+  ul, ol { margin: 0 0 7pt; padding-left: 15pt; }
+  li { margin-bottom: 2.5pt; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 8.4pt; background: #eef1f4; padding: 0.5pt 2.5pt; border-radius: 2px; }
+
+  .subtitle { color: #55606b; font-size: 10pt; margin: 0 0 2pt; }
+  .meta { color: #77828d; font-size: 8pt; margin: 0 0 12pt; }
+
+  table { width: 100%; border-collapse: collapse; margin: 6pt 0 10pt; font-size: 8.1pt; }
+  th, td { border: 0.6pt solid #ccd3da; padding: 3.4pt 4.5pt; text-align: left; vertical-align: top; }
+  th { background: #1a1d21; color: #fff; font-weight: 600; font-size: 7.8pt; letter-spacing: 0.2pt; }
+  tbody tr:nth-child(even) { background: #f5f7f9; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .grp td { background: #dde4ea !important; font-weight: 700; font-size: 8.2pt; }
+
+  .tag { display: inline-block; padding: 0.5pt 4pt; border-radius: 8px; font-size: 7.2pt; font-weight: 700; letter-spacing: 0.2pt; white-space: nowrap; }
+  .t-free   { background: #d8f0dc; color: #14532d; border: 0.5pt solid #7cc48c; }
+  .t-paid   { background: #dbe6f7; color: #16365e; border: 0.5pt solid #7ba2d8; }
+  .t-trial  { background: #fdeccd; color: #6b4408; border: 0.5pt solid #dfab4e; }
+  .t-risk   { background: #fadadd; color: #6d1220; border: 0.5pt solid #d98b95; }
+
+  .callout { border-left: 3pt solid #b8860b; background: #fdf8ec; padding: 6pt 9pt; margin: 8pt 0 10pt; }
+  .callout.warn { border-left-color: #b03a48; background: #fdf1f2; }
+  .callout.ok   { border-left-color: #2e7d4f; background: #f0f9f2; }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .callout strong { color: #000; }
+
+  .pagebreak { page-break-before: always; }
+  table, tr, .callout { page-break-inside: avoid; }
+  h2, h3 { page-break-after: avoid; }
+
+  .footnote { font-size: 7.6pt; color: #6b757e; margin-top: 4pt; }
+  .src { font-size: 7.6pt; word-break: break-all; }
+  .src li { margin-bottom: 1.5pt; }
+</style>
+</head>
+<body>
+
+<h1>LLM Provider &amp; Model Analysis</h1>
+<p class="subtitle">Free and paid API tiers — availability, economics, and a 1–2 year outlook</p>
+<p class="meta">
+  Prepared for the Noviq <em>API Integration</em> tab · Data current as of <strong>July 2026</strong> ·
+  Internal engineering &amp; product reference
+</p>
+
+<div class="callout">
+  <p><strong>How to read this document — and its one hard limitation.</strong></p>
+  <ul>
+    <li><strong>Sections 1–4 are observed fact</strong>, drawn from provider documentation and pricing trackers cited in Section 9. These are verifiable today.</li>
+    <li><strong>Section 6 (the 1–2 year outlook) is a projection, not a fact.</strong> No provider publishes a guarantee that a free tier will still exist in 2028. What providers <em>do</em> publish is a <em>model deprecation floor</em> ("this model will not retire sooner than X"), and that is a different promise: it covers a specific model ID, not the commercial tier it sits in. Section 6 therefore separates <span class="tag t-free">EVIDENCE</span> (published dates and policies) from <span class="tag t-risk">JUDGEMENT</span> (our inference). Do not present the judgement column to a customer as a commitment.</li>
+    <li><strong>Free-tier numbers decay fastest of anything here.</strong> Rate limits changed materially at least three times across the industry in the last twelve months (Section 5). Section 8 specifies how the app should handle this: the limits belong in a refreshable config, never in compiled constants.</li>
+  </ul>
+</div>
+
+<h2>1. Executive summary</h2>
+
+<ol>
+  <li><strong>Free inference is real, permanent, and commercially usable — but only at prototype scale.</strong> Six providers (Google AI Studio, Groq, Cerebras, Mistral, OpenRouter, GitHub Models) run <em>rate-limited free tiers with no expiry date</em>, not time-boxed trials. None is viable as a production backend for a multi-user deployment; ceilings land between 50 and ~14,400 requests/day.</li>
+  <li><strong>The cheapest capable paid model now costs about 1/200th of the most expensive.</strong> DeepSeek V4-Flash is $0.14/$0.28 per million tokens; GPT-5.4 Pro is $30/$180. For Noviq's workload — retrieval-grounded answering over a fixed corpus — the mid-tier band ($0.10–$3.00 input) is where the decision actually lives.</li>
+  <li><strong>Price per unit of capability is still falling, but the rate is decelerating.</strong> The 10× per-year collapse of 2021–2025 is not expected to hold; 3–5× annually through 2027 then tapering to 1.5–2× is the mainstream projection. Budget accordingly: do not model 2028 costs on a 10× extrapolation.</li>
+  <li><strong>The largest integration risk is not price, it is model churn.</strong> Fourteen widely-used model IDs have publicly scheduled shutdown dates between July and December 2026 alone, including GPT-4o, GPT-4 Turbo, o1, Gemini 2.5 Pro and Gemini 2.5 Flash. Any provider list we hardcode will be partially dead within nine months.</li>
+  <li><strong>Design consequence for the integration tab:</strong> treat the provider/model catalogue as <em>remote, versioned data</em> with a live capability probe, not as a static dropdown. Section 8 specifies this.</li>
+</ol>
+
+<h2>2. Provider landscape at a glance</h2>
+
+<table>
+  <thead>
+    <tr><th style="width:17%">Provider</th><th style="width:10%">Tier type</th><th style="width:26%">Free allowance</th><th style="width:9%">Card?</th><th style="width:38%">What it is actually good for</th></tr>
+  </thead>
+  <tbody>
+    <tr class="grp"><td colspan="5">Permanent free tiers — no expiry, capped by rate limit</td></tr>
+    <tr><td><strong>Google AI Studio</strong> (Gemini API)</td><td><span class="tag t-free">FREE</span></td><td>Flash 10 RPM / 250 RPD; Flash-Lite 15 RPM / 1,000 RPD; up to 1M context</td><td>No</td><td>Best free context window and multimodal input. Note: as of May 2026 the free tier covers Flash and Flash-Lite only — Pro was removed.</td></tr>
+    <tr><td><strong>Groq</strong></td><td><span class="tag t-free">FREE</span></td><td>30 RPM / 6,000 TPM / 14,400 RPD per model (varies by model)</td><td>No</td><td>Highest free request ceiling in the industry, and the lowest latency (~320 tok/s on Llama 3.3 70B). Best free tier for interactive UX.</td></tr>
+    <tr><td><strong>Cerebras</strong></td><td><span class="tag t-free">FREE</span></td><td>1M tokens/day; 5 RPM / 30K TPM; <strong>8,192-token context cap on free</strong></td><td>No</td><td>Highest free token volume, extreme throughput (~2,000+ tok/s). The 8K context cap makes it unusable for RAG with large retrieved context.</td></tr>
+    <tr><td><strong>OpenRouter</strong></td><td><span class="tag t-free">FREE</span></td><td>50 RPD under $10 lifetime credit; <strong>1,000 RPD</strong> after a one-off $10 top-up; ~20 RPM</td><td>No</td><td>One key, ~30+ free models across many upstreams. The single best <em>breadth</em> option and the natural aggregator to integrate first.</td></tr>
+    <tr><td><strong>Mistral</strong> (La Plateforme)</td><td><span class="tag t-free">FREE</span></td><td>"Experiment" tier, ~1B tokens/month, phone verification</td><td>No</td><td>Very high volume ceiling, EU data residency. <strong>Requires opt-in to training on your data</strong> — see Section 7.</td></tr>
+    <tr><td><strong>GitHub Models</strong></td><td><span class="tag t-free">FREE</span></td><td>~15 RPM / 150–1,000 RPD; 8K–128K context</td><td>No</td><td>Breadth across vendors on an existing GitHub account. Explicitly positioned for CI and experimentation, not production.</td></tr>
+    <tr><td><strong>Cloudflare Workers AI</strong></td><td><span class="tag t-free">FREE</span></td><td>10,000 neurons/day (shared pool across all models)</td><td>No</td><td>Edge deployment. Small context (2K–8K). Large models drain the shared neuron pool very fast.</td></tr>
+    <tr><td><strong>NVIDIA NIM</strong></td><td><span class="tag t-free">FREE</span></td><td>1,000 credits at signup, +4,000 on request; 128K context</td><td>No</td><td>Access to Nemotron, DeepSeek R1/V3.1, Kimi K2.5. Credit-metered rather than truly perpetual.</td></tr>
+    <tr><td><strong>Cohere</strong></td><td><span class="tag t-free">FREE</span></td><td>10–20 RPM, ~100 requests/day, 128K context</td><td>No</td><td>RAG-with-citations design. <strong>Free key is non-commercial use only</strong> — disqualifying for a customer deployment.</td></tr>
+    <tr><td><strong>Hugging Face</strong></td><td><span class="tag t-free">FREE</span></td><td>Community-tier, variable and undocumented</td><td>No</td><td>Widest open-model catalogue. Limits are not contractual; unsuitable where predictability matters.</td></tr>
+
+    <tr class="grp"><td colspan="5">One-off trial credits — these expire; do not present them as "free" in the UI</td></tr>
+    <tr><td>DeepSeek</td><td><span class="tag t-trial">TRIAL</span></td><td>5M tokens on new developer accounts</td><td>No</td><td>Generous grant, then the cheapest paid tier available anywhere.</td></tr>
+    <tr><td>xAI (Grok)</td><td><span class="tag t-trial">TRIAL</span></td><td>Up to ~$150–175/month via the data-sharing programme</td><td>Yes</td><td>Effectively a large recurring free allowance — <strong>in exchange for your data</strong>. Programme terms have changed repeatedly.</td></tr>
+    <tr><td>Baseten</td><td><span class="tag t-trial">TRIAL</span></td><td>$30 credit</td><td>After exhaustion</td><td>Largest single trial credit on the market.</td></tr>
+    <tr><td>SambaNova</td><td><span class="tag t-trial">TRIAL</span></td><td>$5 credit; Llama 3.1 405B, 128K</td><td>Yes</td><td>Frontier open-weight access at very high speed.</td></tr>
+    <tr><td>AI21</td><td><span class="tag t-trial">TRIAL</span></td><td>$10 credit</td><td>—</td><td>Jamba family, long-context specialist.</td></tr>
+    <tr><td>Fireworks / Nebius</td><td><span class="tag t-trial">TRIAL</span></td><td>$1 credit each</td><td>—</td><td>Token-level evaluation only; too small for meaningful testing.</td></tr>
+
+    <tr class="grp"><td colspan="5">No free tier at all — paid from the first token</td></tr>
+    <tr><td>OpenAI</td><td><span class="tag t-paid">PAID</span></td><td>None (historically, free daily tokens in exchange for data sharing)</td><td>Yes</td><td>Broadest capability range, from $0.10 to $30 per M input.</td></tr>
+    <tr><td>Anthropic</td><td><span class="tag t-paid">PAID</span></td><td>None</td><td>Yes</td><td>Strongest published deprecation guarantees in the industry (Section 6).</td></tr>
+  </tbody>
+</table>
+
+<div class="pagebreak"></div>
+<h2>3. Free-tier detail — ranked for our use case</h2>
+
+<p>Ranking criterion is Noviq-specific: <strong>retrieval-grounded legal answering</strong>, which means a large prompt (~8K tokens of retrieved passages) and a modest completion. This inverts the usual ranking — token-volume tiers matter less than <em>context ceiling</em>, and a tier with a hard 8K context is unusable no matter how many tokens/day it grants.</p>
+
+<table>
+  <thead>
+    <tr><th style="width:5%">#</th><th style="width:16%">Provider</th><th style="width:11%">Verdict for RAG</th><th style="width:68%">Reasoning</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="num">1</td><td><strong>Groq</strong></td><td><span class="tag t-free">STRONG</span></td><td>128K context, 14,400 RPD, sub-second latency. The only free tier that could plausibly carry a single-user demo of Noviq end to end. Token-per-minute cap (6,000 TPM) is the real constraint: an 8K-token RAG prompt means roughly <em>one query per 80 seconds</em> sustained.</td></tr>
+    <tr><td class="num">2</td><td><strong>Google AI Studio</strong></td><td><span class="tag t-free">STRONG</span></td><td>Up to 1M context free — by far the most headroom for large retrieved context. 250–1,000 RPD is adequate for demos. Main caveat is the data-usage term outside EU/UK/EEA.</td></tr>
+    <tr><td class="num">3</td><td><strong>OpenRouter</strong></td><td><span class="tag t-free">GOOD</span></td><td>1,000 RPD after a one-time $10 unlock, one key across ~30 models, and no training-on-data clause. Best choice for <em>letting a user try several models</em>, which is precisely what the integration tab is for.</td></tr>
+    <tr><td class="num">4</td><td><strong>Mistral</strong></td><td><span class="tag t-trial">CONDITIONAL</span></td><td>~1B tokens/month is enormous and 256K context is ample — but the free tier is contingent on allowing training on submitted data. For a legal corpus that is a policy decision, not an engineering one.</td></tr>
+    <tr><td class="num">5</td><td><strong>GitHub Models</strong></td><td><span class="tag t-trial">LIMITED</span></td><td>Fine for CI smoke tests of the integration path. Context down to 8K on some models and low RPM rule it out for user-facing work.</td></tr>
+    <tr><td class="num">6</td><td><strong>Cerebras</strong></td><td><span class="tag t-risk">UNSUITABLE</span></td><td>1M tokens/day is the headline, but the <strong>8,192-token free context cap</strong> is below our typical prompt size. It would truncate retrieved passages — the exact failure mode that produces ungrounded answers. Excellent for short-prompt/high-volume work; wrong for ours.</td></tr>
+    <tr><td class="num">7</td><td><strong>Cloudflare Workers AI</strong></td><td><span class="tag t-risk">UNSUITABLE</span></td><td>2K–8K context. Same disqualification as Cerebras, with a smaller allowance.</td></tr>
+    <tr><td class="num">8</td><td><strong>Cohere</strong></td><td><span class="tag t-risk">BLOCKED</span></td><td>Technically a good fit (128K, citation-native), but the free key is <strong>non-commercial only</strong>. Cannot ship it to a paying institution.</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <p><strong>The tokens-per-minute trap.</strong> Free tiers advertise requests/day, which flatters them. RAG traffic is token-heavy per request, so the binding constraint is almost always TPM, not RPD. Groq's 14,400 RPD looks like 10 requests/minute of headroom, but at 6,000 TPM and an 8K-token prompt the true sustained rate is closer to <strong>0.75 requests/minute</strong>. The integration tab should show users the <em>effective</em> rate at our average prompt size, not the provider's headline number — otherwise every free-tier user will hit 429s they were told wouldn't happen.</p>
+</div>
+
+<h2>4. Paid tier pricing — USD per million tokens</h2>
+
+<table>
+  <thead>
+    <tr><th style="width:15%">Provider</th><th style="width:24%">Model</th><th style="width:10%">Input</th><th style="width:10%">Output</th><th style="width:41%">Positioning</th></tr>
+  </thead>
+  <tbody>
+    <tr class="grp"><td colspan="5">Frontier tier — highest capability, highest cost</td></tr>
+    <tr><td>OpenAI</td><td>GPT-5.4 Pro</td><td class="num">$30.00</td><td class="num">$180.00</td><td>Premium reasoning. Output price is the outlier of the entire market.</td></tr>
+    <tr><td>OpenAI</td><td>GPT-5.5</td><td class="num">$5.00</td><td class="num">$30.00</td><td>Current flagship.</td></tr>
+    <tr><td>Anthropic</td><td>Claude Opus 4.7 / 4.8</td><td class="num">$5.00</td><td class="num">$25.00</td><td>1M context. Best-documented retirement floors in the industry.</td></tr>
+    <tr><td>OpenAI</td><td>o1</td><td class="num">$15.00</td><td class="num">$60.00</td><td>Legacy reasoning line — <strong>shutdown 23 Oct 2026</strong>.</td></tr>
+
+    <tr class="grp"><td colspan="5">Production workhorse tier — the realistic band for Noviq</td></tr>
+    <tr><td>Anthropic</td><td>Claude Sonnet 4.6</td><td class="num">$3.00</td><td class="num">$15.00</td><td>Strong instruction-following and long-document analysis.</td></tr>
+    <tr><td>OpenAI</td><td>GPT-5.4</td><td class="num">$2.50</td><td class="num">$15.00</td><td>General production standard.</td></tr>
+    <tr><td>Google</td><td>Gemini 3.1 Pro (≤200K)</td><td class="num">$2.00</td><td class="num">$12.00</td><td>Cheapest frontier-class option. Rises to $4/$18 above 200K context.</td></tr>
+    <tr><td>OpenAI</td><td>GPT-4.1</td><td class="num">$2.00</td><td class="num">$8.00</td><td>1M context long-context specialist.</td></tr>
+    <tr><td>Cohere</td><td>Command R+</td><td class="num">$2.50</td><td class="num">$10.00</td><td>Purpose-built for RAG with inline citations — architecturally close to our need.</td></tr>
+    <tr><td>xAI</td><td>Grok 4.3</td><td class="num">$1.25</td><td class="num">$2.50</td><td>1M context at a mid-tier price; unusually cheap output.</td></tr>
+    <tr><td>Anthropic</td><td>Claude Haiku 4.5</td><td class="num">$1.00</td><td class="num">$5.00</td><td>High-volume, low-latency.</td></tr>
+
+    <tr class="grp"><td colspan="5">Budget tier — where per-query cost stops mattering</td></tr>
+    <tr><td>OpenAI</td><td>GPT-5.4 Mini</td><td class="num">$0.75</td><td class="num">$4.50</td><td>Cost-efficient general model.</td></tr>
+    <tr><td>DeepSeek</td><td>deepseek-reasoner</td><td class="num">$0.55</td><td class="num">$2.19</td><td>Chain-of-thought reasoning at budget pricing.</td></tr>
+    <tr><td>Google</td><td>Gemini 3 Flash</td><td class="num">$0.50</td><td class="num">$3.00</td><td>Mid-tier production.</td></tr>
+    <tr><td>Mistral</td><td>Large 3</td><td class="num">$0.50</td><td class="num">$1.50</td><td>EU data residency available — relevant if data-boundary policy tightens.</td></tr>
+    <tr><td>DeepSeek</td><td>V4-Pro</td><td class="num">$0.435</td><td class="num">$0.87</td><td>Flagship-class at budget cost.</td></tr>
+    <tr><td>OpenAI</td><td>GPT-4.1 Mini</td><td class="num">$0.40</td><td class="num">$1.60</td><td>High-volume capable.</td></tr>
+    <tr><td>Cerebras</td><td>gpt-oss-120b</td><td class="num">$0.35</td><td class="num">$0.75</td><td>Open-weight at extreme throughput.</td></tr>
+    <tr><td>DeepSeek</td><td>deepseek-chat (V3.2)</td><td class="num">$0.27</td><td class="num">$1.10</td><td>Cache hits drop input to $0.07.</td></tr>
+    <tr><td>Google</td><td>Gemini 3.1 Flash-Lite</td><td class="num">$0.25</td><td class="num">$1.50</td><td>1M context at budget pricing — unusual combination.</td></tr>
+    <tr><td>xAI</td><td>Grok 4.1 Fast</td><td class="num">$0.20</td><td class="num">—</td><td>2M context window.</td></tr>
+    <tr><td>Groq</td><td>GPT-OSS 120B</td><td class="num">$0.15</td><td class="num">$0.60</td><td>Open-weight on LPU hardware.</td></tr>
+    <tr><td>DeepSeek</td><td>V4-Flash</td><td class="num">$0.14</td><td class="num">$0.28</td><td><strong>Cheapest capable flagship on the market.</strong></td></tr>
+    <tr><td>Mistral</td><td>Small 3.2</td><td class="num">$0.10</td><td class="num">$0.30</td><td>GDPR-compliant budget tier.</td></tr>
+    <tr><td>Groq</td><td>Llama 3.1 8B</td><td class="num">$0.05</td><td class="num">—</td><td>Floor of the market.</td></tr>
+  </tbody>
+</table>
+
+<div class="callout ok">
+  <p><strong>Two discounts that change the arithmetic more than model choice does.</strong></p>
+  <ul>
+    <li><strong>Prompt caching — up to 90% off cached input</strong> (OpenAI and Anthropic; DeepSeek prices cache hits at $0.07 vs $0.27). Noviq's system prompt plus grounding instructions are identical on every single query. That prefix is pure cached input. This is the single highest-leverage cost optimisation available to us and it requires no model change.</li>
+    <li><strong>Batch processing — 50% off</strong>, applicable to anything not user-interactive: summary generation, re-indexing passes, evaluation runs.</li>
+    <li>Stacked, these bring effective cost to roughly <strong>25% of list price</strong>. A $3.00/M model run well is cheaper than a $1.00/M model run naively.</li>
+  </ul>
+</div>
+
+<div class="pagebreak"></div>
+<h2>5. Current state — what has actually changed recently</h2>
+
+<p>This section exists because it is the empirical basis for Section 6. Every item is an observed change, not a prediction.</p>
+
+<ul>
+  <li><strong>Late 2025 — Google cut Gemini free-tier rate limits by 50–80%.</strong> The largest single free-tier reduction observed. Free access survived; its generosity did not.</li>
+  <li><strong>May 2026 — Google removed Gemini Pro from the free tier entirely.</strong> Free now covers Flash and Flash-Lite only. Pattern: <em>the frontier model leaves the free tier while the cheap model stays.</em></li>
+  <li><strong>31 May 2026 — Cerebras cut its free model catalogue from roughly a dozen models to two</strong> (gpt-oss-120b and GLM-4.7), and capped free context at 8,192 tokens.</li>
+  <li><strong>Ongoing — OpenRouter's free ceiling is now credit-gated</strong>: 50 RPD below $10 lifetime spend, 1,000 RPD above it. Free access converted into a customer-acquisition funnel rather than withdrawn.</li>
+  <li><strong>Ongoing — xAI's $150–175/month free credit programme has changed terms repeatedly</strong> and is contingent on data sharing.</li>
+  <li><strong>Stable — Groq has maintained a no-credit-card, no-token-charge developer tier</strong> across the whole period, gated only by rate limits. It is the most stable free tier we can identify by track record.</li>
+</ul>
+
+<div class="callout">
+  <p><strong>The pattern across all six observations.</strong> Free tiers are not being <em>withdrawn</em> — they are being <em>repriced downward in capability</em>. Providers keep the zero-dollar entry point because it is their acquisition channel, but they steadily remove from it: first the frontier models, then the context window, then the model breadth. This matters for the projection in Section 6 far more than any single announcement, and it points to a specific conclusion: <em>plan for free tiers to persist but degrade</em>, rather than for them to disappear.</p>
+</div>
+
+<h2>6. Outlook — 1 to 2 years (mid-2027 to mid-2028)</h2>
+
+<div class="callout warn">
+  <p><strong>Read this before using the table.</strong> The "Evidence" column is what providers have published. The "Judgement" column is our inference from the Section 5 pattern, and carries no guarantee from anyone. The two must not be conflated in customer-facing material or in the app UI.</p>
+</div>
+
+<h3>6.1 What is contractually known</h3>
+
+<table>
+  <thead><tr><th style="width:16%">Provider</th><th style="width:44%">Published policy (evidence)</th><th style="width:40%">What it does <em>not</em> cover</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Anthropic</strong></td><td>Minimum <strong>60 days'</strong> notice on publicly released models. Publishes a per-model "not sooner than" floor — e.g. Opus 4.8 will not retire before <strong>28 May 2027</strong>. Commits to preserving model weights.</td><td>Says nothing about pricing changes, and Anthropic has no free tier to withdraw.</td></tr>
+    <tr><td><strong>OpenAI</strong></td><td><strong>6 months</strong> for generally available models, <strong>3 months</strong> for specialised variants, as little as <strong>2 weeks</strong> for previews.</td><td>Preview models are effectively unstable by policy. Never pin a preview ID in shipped code.</td></tr>
+    <tr><td><strong>Google</strong></td><td>Publishes <em>earliest-possible</em> shutdown dates, confirmed closer to the deadline.</td><td>Weakest commitment of the three. Gemini 3 Pro Preview lasted <strong>16 weeks</strong>.</td></tr>
+    <tr><td><strong>Groq / Cerebras / OpenRouter / Mistral</strong></td><td>No published deprecation policy located.</td><td>Model availability can change without notice. Section 5 shows Cerebras doing exactly that.</td></tr>
+  </tbody>
+</table>
+
+<h3>6.2 Confirmed shutdown calendar — next 6 months</h3>
+
+<p>Any model in this list that appears in a shipped provider dropdown is a scheduled outage.</p>
+
+<table>
+  <thead><tr><th style="width:16%">Date</th><th style="width:14%">Provider</th><th style="width:38%">Model / API being retired</th><th style="width:32%">Successor</th></tr></thead>
+  <tbody>
+    <tr><td>24 Jul 2026</td><td>DeepSeek</td><td>Legacy <code>deepseek-chat</code> / <code>deepseek-reasoner</code> aliases</td><td>V4-Flash / V4-Pro</td></tr>
+    <tr><td>24 Jul 2026</td><td>Anthropic</td><td>Claude Opus 4.7 fast mode</td><td>Opus 4.8 fast mode</td></tr>
+    <tr><td>5 Aug 2026</td><td>Anthropic</td><td>Claude Opus 4.1</td><td>Claude Opus 4.8</td></tr>
+    <tr><td>26 Aug 2026</td><td>OpenAI</td><td>Assistants API</td><td>Responses + Conversations API</td></tr>
+    <tr><td>24 Sep 2026</td><td>Google</td><td>Gemini 2.0 Flash, 2.0 Flash Live</td><td>Gemini 3.x Flash</td></tr>
+    <tr><td>16 Oct 2026</td><td>Google</td><td><strong>Gemini 2.5 Pro, Gemini 2.5 Flash</strong></td><td>Gemini 3.1 Pro Preview / 3.6 Flash</td></tr>
+    <tr><td>23 Oct 2026</td><td>OpenAI</td><td><strong>GPT-4o, GPT-4, GPT-4 Turbo, GPT-3.5</strong></td><td>GPT-5.5 / GPT-5.4 mini</td></tr>
+    <tr><td>23 Oct 2026</td><td>OpenAI</td><td><strong>o1, o1-pro, o3-mini, o4-mini</strong></td><td>GPT-5.5 / GPT-5.5 Pro</td></tr>
+    <tr><td>23 Oct 2026</td><td>OpenAI</td><td>GPT-4.1 nano</td><td>GPT-5.4 nano</td></tr>
+    <tr><td>30 Nov 2026</td><td>OpenAI</td><td>Prompts API, Evals, Agent Builder</td><td>Agents SDK</td></tr>
+    <tr><td>11 Dec 2026</td><td>OpenAI</td><td>Older GPT-5 / o3 snapshots</td><td>Floating aliases remain valid</td></tr>
+  </tbody>
+</table>
+
+<h3>6.3 Projection to mid-2028</h3>
+
+<table>
+  <thead><tr><th style="width:22%">Question</th><th style="width:39%">Evidence</th><th style="width:39%">Judgement (our inference — not a guarantee)</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Will free tiers still exist in 2028?</strong></td>
+      <td>All six major free tiers survived 2024–2026 intact as <em>tiers</em>, while being repeatedly reduced in generosity. None was withdrawn.</td>
+      <td><span class="tag t-free">HIGH CONFIDENCE</span> Yes. Free tiers are acquisition funnels and competition among providers is intense. Expect them to persist.</td>
+    </tr>
+    <tr>
+      <td><strong>Will they still be usable for our workload?</strong></td>
+      <td>Google removed Pro; Cerebras cut context to 8K and models to two; OpenRouter credit-gated its ceiling.</td>
+      <td><span class="tag t-risk">LOW CONFIDENCE</span> Expect continued degradation: frontier models exit free tiers, context ceilings tighten. <strong>Do not architect any customer-facing path around a free tier.</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Will paid prices keep falling?</strong></td>
+      <td>10× per year 2021–2025. Mainstream projection: 3–5× annually through 2027, tapering to 1.5–2×.</td>
+      <td><span class="tag t-paid">MEDIUM CONFIDENCE</span> Yes, but decelerating. Budget 2028 on 2–3× cumulative improvement, not 10×.</td>
+    </tr>
+    <tr>
+      <td><strong>Which providers are safest to build against?</strong></td>
+      <td>Anthropic publishes per-model retirement floors and 60-day notice; OpenAI 6 months; Google earliest-possible only.</td>
+      <td><span class="tag t-paid">MEDIUM CONFIDENCE</span> Anthropic and OpenAI for contractual predictability; Groq for free-tier track record; OpenRouter for insulation via abstraction.</td>
+    </tr>
+    <tr>
+      <td><strong>Will today's model IDs still resolve?</strong></td>
+      <td>14 widely-used IDs have shutdown dates inside the next 6 months.</td>
+      <td><span class="tag t-risk">HIGH CONFIDENCE — NEGATIVE</span> No. Assume <strong>every specific model ID has a ~12-month half-life.</strong> This is the single most important design input in this document.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pagebreak"></div>
+<h2>7. Non-price selection criteria</h2>
+
+<p>Price is the easiest axis to compare and rarely the one that decides. For a legal-corpus product these matter more:</p>
+
+<ul>
+  <li><strong>Training on submitted data.</strong> Mistral's free tier <em>requires</em> opt-in to training. Google uses free-tier prompts to improve models outside EU/UK/EEA. xAI's free credits are explicitly a data-sharing exchange. OpenRouter and Cohere state no-training terms. For any deployment handling non-public documents this is a gating criterion, not a preference — and it should be surfaced as a visible tag in the integration UI, not buried in documentation.</li>
+  <li><strong>Licence restrictions.</strong> Cohere's free key is non-commercial. A free tier that cannot legally be used in a customer deployment has zero value to us regardless of its limits.</li>
+  <li><strong>No SLA on free tiers.</strong> Universal. Free tiers carry no availability guarantee of any kind.</li>
+  <li><strong>Silent quality reduction.</strong> Free endpoints may serve lower-quantisation weights or reduced context than the paid endpoint for the same nominal model. Identical model ID does not imply identical output quality across tiers.</li>
+  <li><strong>Data residency.</strong> Mistral offers EU residency; most others do not offer regional guarantees on free tiers.</li>
+</ul>
+
+<h2>8. Implications for the API Integration tab</h2>
+
+<p>These follow directly from the findings above and are the actionable output of this analysis.</p>
+
+<h4>8.1 The catalogue must be data, not code</h4>
+<ul>
+  <li>Given a ~12-month model-ID half-life (§6.3), a compiled-in provider/model list guarantees a broken dropdown within a year. Store the catalogue as a <strong>versioned, refreshable config document</strong> — shipped with a bundled default so the app works offline, updated out-of-band without a release.</li>
+  <li>Each model entry should carry at minimum: <code>provider</code>, <code>model_id</code>, <code>tier</code> (free / trial / paid), <code>context_window</code>, <code>input_price</code>, <code>output_price</code>, <code>rpm</code>, <code>tpm</code>, <code>rpd</code>, <code>trains_on_data</code>, <code>commercial_use_allowed</code>, <code>known_shutdown_date</code>.</li>
+  <li><code>known_shutdown_date</code> drives a visible deprecation warning in the UI. A user selecting GPT-4o today should be told it stops working on 23 October 2026 — <em>before</em> they build on it.</li>
+</ul>
+
+<h4>8.2 Tags the user actually needs</h4>
+<p>The request specified free/paid tags. Findings suggest these are necessary but insufficient — three of them encode disqualifying conditions that a free/paid split hides:</p>
+<ul>
+  <li><span class="tag t-free">FREE</span> permanent, rate-limited, no expiry</li>
+  <li><span class="tag t-trial">TRIAL</span> one-off credits that will run out — <em>must be visually distinct from FREE</em>, or users will build on a tier that vanishes</li>
+  <li><span class="tag t-paid">PAID</span> metered from the first token</li>
+  <li><span class="tag t-risk">TRAINS ON YOUR DATA</span> Mistral free, Google free outside EU/UK/EEA, xAI credits</li>
+  <li><span class="tag t-risk">NON-COMMERCIAL</span> Cohere free</li>
+  <li><span class="tag t-risk">CONTEXT-LIMITED</span> below our RAG prompt size — Cerebras free (8K), Cloudflare (2K–8K)</li>
+  <li><span class="tag t-risk">RETIRING &lt; 90 DAYS</span> derived automatically from <code>known_shutdown_date</code></li>
+</ul>
+
+<h4>8.3 Validate the key against the model, not just the provider</h4>
+<ul>
+  <li>On key entry, issue a minimal probe call to the <em>selected model</em> and report the concrete result. A key valid for a provider is routinely not entitled to a given model — the Gemini free tier is the live example: a valid key returns 404/403 on Pro but 200 on Flash.</li>
+  <li>Probe and record the <em>actual</em> context ceiling where cheaply possible, rather than trusting the catalogue. Section 5 shows published free-tier context changing without notice.</li>
+</ul>
+
+<h4>8.4 Surface the effective rate, not the headline</h4>
+<ul>
+  <li>Per §3, compute expected sustainable throughput from TPM ÷ our measured average prompt size and display <em>that</em>. Showing Groq's "14,400 requests/day" when the true sustained ceiling is under one request per minute would be the most likely source of user-reported "it's broken" tickets.</li>
+  <li>This is a specific instance of a failure pattern already recorded for this project: a number shown to a user must be derived from the thing itself, never re-estimated from a headline figure.</li>
+</ul>
+
+<h4>8.5 Prefer aggregators for breadth, direct keys for production</h4>
+<ul>
+  <li><strong>OpenRouter first.</strong> One integration yields ~30 free models plus most paid ones, and absorbs upstream model churn on our behalf — directly mitigating the §6.3 half-life risk.</li>
+  <li><strong>Direct provider keys second</strong>, for customers who need a contractual relationship, data-residency guarantees, or a zero-retention DPA. An aggregator adds a party to the data path, which matters for the data-boundary question.</li>
+</ul>
+
+<h4>8.6 Enable prompt caching wherever the provider supports it</h4>
+<ul>
+  <li>Per §4, this is up to 90% off input and our prompt prefix is constant across every query. It should be a default-on behaviour in the provider adapter, not a user-facing toggle.</li>
+</ul>
+
+<h2>9. Sources</h2>
+<p class="footnote">All figures retrieved July 2026. Pricing and especially free-tier limits change frequently — re-verify against provider documentation before any figure here is quoted externally or committed to code.</p>
+<ol class="src">
+  <li>OpenRouter — Free LLM APIs Compared · https://openrouter.ai/blog/tutorials/free-llm-apis-compared/</li>
+  <li>OpenRouter Rate Limits (official support) · https://openrouter.zendesk.com/hc/en-us/articles/39501163636379-OpenRouter-Rate-Limits-What-You-Need-to-Know</li>
+  <li>CloudZero — LLM API Pricing Comparison 2026 · https://www.cloudzero.com/blog/llm-api-pricing-comparison/</li>
+  <li>CloudZero — Groq Pricing 2026 · https://www.cloudzero.com/blog/groq-pricing/</li>
+  <li>Morph — LLM API Providers 2026 · https://www.morphllm.com/llm-api</li>
+  <li>Morph — Cerebras Pricing 2026 · https://www.morphllm.com/cerebras-pricing</li>
+  <li>TokenMix — Groq Free Tier Limits 2026 · https://tokenmix.ai/blog/groq-free-tier-limits-2026</li>
+  <li>TokenMix — Free LLM APIs 2026, Every Provider Tested · https://tokenmix.ai/blog/free-llm-apis-2026-every-provider-free-tier-tested</li>
+  <li>Anthropic — Model Deprecations (official) · https://platform.claude.com/docs/en/about-claude/model-deprecations</li>
+  <li>OpenAI — Deprecations (official) · https://developers.openai.com/api/docs/deprecations</li>
+  <li>benchr — AI Model Deprecations calendar · https://benchr.org/deprecations</li>
+  <li>Google Cloud — Generative AI on Vertex AI deprecations · https://docs.cloud.google.com/vertex-ai/generative-ai/docs/deprecations</li>
+  <li>PE Collective — Gemini API Free Tier 2026 · https://pecollective.com/tools/gemini-free-tier-guide/</li>
+  <li>Epoch AI — LLM Inference Price Trends · https://epoch.ai/data-insights/llm-inference-price-trends</li>
+  <li>NxCode — DeepSeek API Pricing Guide 2026 · https://www.nxcode.io/resources/news/deepseek-api-pricing-complete-guide-2026</li>
+  <li>AI Pricing Guru — xAI Grok Pricing July 2026 · https://www.aipricing.guru/xai-pricing/</li>
+  <li>Awesome Agents — Free AI Inference Providers 2026 · https://awesomeagents.ai/tools/free-ai-inference-providers-2026/</li>
+  <li>Price Per Token — Cloudflare Workers AI free tier · https://pricepertoken.com/endpoints/cloudflare/free</li>
+  <li>Ian Paterson — Free LLM API Tiers 2026 · https://ianlpaterson.com/blog/free-llm-api-2026/</li>
+</ol>
+
+</body>
+</html>

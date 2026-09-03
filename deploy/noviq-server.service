@@ -1,0 +1,41 @@
+# F014 (T030) — noviq headless server (API + static web client).
+# Install: copy to /etc/systemd/system/, `systemctl daemon-reload`,
+# `systemctl enable --now noviq-server`.
+[Unit]
+Description=Noviq headless server (API + web client)
+After=network-online.target
+Wants=network-online.target
+# F016 (T024) — when NOVIQ_INFER_ENGINE=vllm the server generates through the
+# loopback vLLM sidecar, so order after it and pull it in. `Wants=` (not
+# `Requires=`) is deliberate: a llama.cpp-only box may not have the sidecar unit
+# installed, and a sidecar crash must not cascade-stop the server (the Rust side
+# degrades gracefully per FR-011). `After=` only orders boot when both are present.
+Wants=noviq-vllm.service
+After=noviq-vllm.service
+# Remote-API engine (NOVIQ_INFER_ENGINE=remote|api) — generate through a hosted
+# OpenAI-compatible LLM API instead of the local sidecar/GGUF. No local weights,
+# so it does NOT order after noviq-vllm. Set in .env:
+#   NOVIQ_INFER_ENGINE=remote
+#   NOVIQ_REMOTE_URL=https://openrouter.ai/api      # host root, NO /v1 suffix
+#   NOVIQ_REMOTE_MODEL=meta-llama/llama-3.1-8b-instruct
+#   NOVIQ_REMOTE_API_KEY=sk-...                      # secret — .env only, never committed
+#   NOVIQ_REMOTE_ENDPOINT=chat                       # chat (default) | completions
+#   NOVIQ_REMOTE_MAX_MODEL_LEN=8192                  # context window of the remote model
+#   NOVIQ_REMOTE_TIMEOUT_MS=60000
+#   NOVIQ_REMOTE_REFERER= / NOVIQ_REMOTE_TITLE=      # optional (OpenRouter attribution)
+
+[Service]
+# Toolchain, models and the repo live under appadmin's home on the IBA VM; there
+# is no dedicated `noviq` user there. The binary needs only libcuda.so.1 (default
+# loader path) at runtime — cudart is statically linked and ORT_DYLIB_PATH rides
+# in the EnvironmentFile — so no extra LD_LIBRARY_PATH is required.
+User=appadmin
+WorkingDirectory=/opt/noviq/echoAI
+ExecStart=/opt/noviq/echoAI/src-tauri/target/release/noviq-server
+# DB data dir, models dir, GPU layers, bind addr, deploy secret (git-ignored).
+EnvironmentFile=/opt/noviq/echoAI/.env
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

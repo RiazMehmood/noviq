@@ -1,0 +1,12 @@
+=== vLLM /api/query N=10 (T017) 2026-06-28T18:32:15+05:00 ===
+=== login ===
+=== firing 10 concurrent /api/query ===
+=== results ===
+served   : 10/10 (failures: 0)
+p50      : 13955 ms
+p95      : 17740 ms  (gate 10000 ms -> FAIL)
+min/max  : 13930 / 17740 ms
+wall     : 17.8 s  ->  throughput 33.8 req/min
+=== GPU during run (used/total MiB, util%) ===
+peak mem: 10518 /  12107 MiB   (SC-004: must stay < total, no OOM)
+ALL_DONE

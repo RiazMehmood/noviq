@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://echo-ai/specs/007/procedure.schema.json",
+  "title": "ProcedureExtraction",
+  "description": "Grammar-constrained Mistral output during Slice D procedure extraction. One ProcedureExtraction per procedural section node.",
+  "type": "object",
+  "required": ["process_name", "steps"],
+  "additionalProperties": false,
+  "properties": {
+    "process_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Officer-facing name, e.g. 'Grant of arms license'."
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Step" }
+    }
+  },
+  "$defs": {
+    "Step": {
+      "type": "object",
+      "required": ["order", "actor", "action", "source_node_id"],
+      "additionalProperties": false,
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free-text designation in v1, e.g. 'Director', 'Secretary', 'Town Officer', 'Municipal Officer', 'SHO', 'DPO', 'DC', 'Commissioner', 'Applicant'."
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "type": ["string", "null"],
+          "description": "e.g. 'if amount > 5 lakh'"
+        },
+        "branch_of_order": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "description": "When non-null, this step is a conditional branch hanging off the step with that order number."
+        },
+        "timeline": {
+          "type": ["string", "null"],
+          "description": "e.g. 'within 30 days'"
+        },
+        "source_node_id": {
+          "type": "string",
+          "pattern": "^n[0-9]{4,6}$",
+          "description": "The graph_nodes id that mandates this step (citation anchor)."
+        }
+      }
+    }
+  }
+}

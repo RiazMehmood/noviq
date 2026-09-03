@@ -1,0 +1,57 @@
+{
+    "ok": true,
+    "pages": {
+        "8": {
+            "above": "SECOND SCHEDULE\n(See Rule-3)\nPART-I\nPOWERS COMMON TO ALL DEPARTMENTS",
+            "below": "7",
+            "tables": [
+                {
+                    "bbox": [
+                        73.224,
+                        150.26,
+                        599.7599899999998,
+                        707.8800100000001
+                    ],
+                    "header": [
+                        "Sr. #",
+                        "Nature of power",
+                        "To whom delegated",
+                        "Extent"
+                    ],
+                    "rows": [
+                        [
+                            "(1)",
+                            "(2)",
+                            "(3)",
+                            "(4)"
+                        ],
+                        [
+                            "1.",
+                            "Creation of Post",
+                            "(i) Administrative Departments shall have full powers to create new post (s) on temporary basis in the development budget (Public Sector Development Programme), included in PC-I or PC-II, subject to the approval of the project or scheme by the relevant forum and subject to availability of development budget against Employees Related Expenses. These posts shall be continued on year to year basis till the completion of the project or scheme. Such post(s) shall cease to exist on the closure, or completion of the project or scheme.",
+                            "Full Powers"
+                        ],
+                        [
+                            "",
+                            "",
+                            "(ii) After completion of the project and submission of approved PC-IV, the barest minimum and essential post(s), if mentioned in PC-I or PC-II, shall be converted from Development Expenditure to Current Expenditure subject to the approval of Finance Department.",
+                            ""
+                        ],
+                        [
+                            "2.",
+                            "Reciprocal up- gradation and down- gradation of posts",
+                            "Administrative Department",
+                            "Full Powers"
+                        ],
+                        [
+                            "Note: All orders regarding reciprocal up-gradation/down-gradation shall be passed by the Administrative Department in a committee headed by the Administrative Secretary and represented by an officer of the Finance Department, not below the rank of Additional Secretary.",
+                            "",
+                            "",
+                            ""
+                        ]
+                    ]
+                }
+            ]
+        }
+    }
+}

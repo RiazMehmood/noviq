@@ -1,0 +1,12 @@
+=== BASELINE llama.cpp  N=10  2026-06-28T16:08:21+05:00 ===
+=== login ===
+=== firing 10 concurrent /api/query ===
+=== results ===
+served   : 10/10 (failures: 0)
+p50      : 22752 ms
+p95      : 45504 ms  (gate 10000 ms -> FAIL)
+min/max  : 4553 / 45504 ms
+wall     : 45.5 s  ->  throughput 13.2 req/min
+=== GPU during run (used/total MiB, util%) ===
+peak mem: 7755 /  12107 MiB   (SC-004: must stay < total, no OOM)
+ALL_DONE
