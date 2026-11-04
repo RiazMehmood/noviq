@@ -154,7 +154,6 @@ committed: API keys for optional cloud providers are read from the environment
 ## Team
 
 **Riaz Mehmood** — backend, retrieval, inference, deployment
-**Younus Shaikh** — evaluation and instrumentation
 
 ## Note on this repository
 
